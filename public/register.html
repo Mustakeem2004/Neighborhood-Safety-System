@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register | Neighborhood Safety</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+</head>
+
+<body>
+    <header class="topbar">
+        <div class="brand">Neighborhood Safety</div>
+        <nav id="topNav" class="nav-links"></nav>
+    </header>
+
+    <main class="container" style="max-width: 700px">
+        <section class="card">
+            <h1>Register as Resident</h1>
+            <p class="muted">Your account will be reviewed by an administrator.</p>
+
+            <form id="registerForm">
+                <label>
+                    Full Name
+                    <input type="text" name="name" required />
+                </label>
+
+                <label>
+                    Email
+                    <input type="email" name="email" required />
+                </label>
+
+                <label>
+                    Password
+                    <input type="password" name="password" minlength="6" required />
+                </label>
+
+                <label>
+                    Address
+                    <input type="text" name="address" required />
+                </label>
+
+                <button class="primary" type="submit">Create Account</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <small>Neighborhood Safety System <span id="year"></span></small>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/auth.js"></script>
+</body>
+
+</html>

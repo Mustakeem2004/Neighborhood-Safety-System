@@ -1,0 +1,16 @@
+# Ignore everything
+
+-
+
+# Except these files
+
+!.vercelignore
+!index.html
+!dashboard.html
+!login.html
+!register.html
+!report.html
+!admin.html
+!css/
+!js/
+!public/
