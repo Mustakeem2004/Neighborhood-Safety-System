@@ -1,4 +1,7 @@
-const API_BASE = "/api";
+const API_BASE =
+  window.location.hostname === "localhost"
+    ? "/api"
+    : "https://neighborhood-safety-system.onrender.com/api";
 
 const getToken = () => localStorage.getItem("token");
 
