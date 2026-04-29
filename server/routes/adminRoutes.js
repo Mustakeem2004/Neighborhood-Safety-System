@@ -4,6 +4,7 @@ const {
   approveUser,
   updateIncidentStatus,
   deleteIncident,
+  getAnalytics,
 } = require("../controllers/adminController");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
