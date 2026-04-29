@@ -431,3 +431,77 @@ footer {
   gap: 10px;
   justify-content: center;
 }
+
+
+/* ================= HERO ================= */
+.hero {
+  background: linear-gradient(135deg, #0d7c66, #4bb3a7);
+  color: white;
+  padding: 70px 40px;
+  border-radius: 25px;
+  text-align: center;
+  margin-top: 40px;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+}
+
+.hero h1 {
+  font-size: 42px;
+  font-weight: 800;
+  margin-bottom: 15px;
+}
+
+.hero p {
+  font-size: 17px;
+  opacity: 0.9;
+  margin-bottom: 30px;
+}
+
+/* ================= BUTTONS ================= */
+.cta-btns {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 12px 22px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+/* PRIMARY */
+.primary-btn {
+  background: white;
+  color: #0d7c66;
+}
+
+.primary-btn:hover {
+  background: #e6f2ef;
+}
+
+/* SECONDARY */
+.secondary-btn {
+  border: 2px solid white;
+  color: white;
+}
+
+.secondary-btn:hover {
+  background: white;
+  color: #0d7c66;
+}
+
+/* ================= NAVBAR FIX ================= */
+.brand i {
+  color: #0d7c66;
+  margin-right: 8px;
+}
+
+.nav-links a.active {
+  background: #0d7c66;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+}

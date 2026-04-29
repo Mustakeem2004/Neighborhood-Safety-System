@@ -18,43 +18,45 @@
 
 <body>
 
-    <!-- ================= NAVBAR ================= -->
-    <header class="topbar">
-        <div class="brand">
-            <i class="fa-solid fa-shield-halved" style="color:#0d7c66;margin-right:8px;"></i>
-            Neighborhood Safety
+<header class="topbar">
+    <div class="brand">
+        <i class="fa-solid fa-shield-halved"></i>
+        Neighborhood Safety
+    </div>
+
+    <nav class="nav-links" id="topNav"></nav>
+</header>
+
+<main class="container">
+
+    <!-- HERO -->
+    <section class="hero">
+        <h1>Safer Communities Start With You</h1>
+        <p>
+            Report incidents instantly, track updates in real-time, and help
+            authorities take faster action in your neighborhood.
+        </p>
+
+        <div class="cta-btns">
+            <a class="btn primary-btn" href="/register.html">
+                Create Account
+            </a>
+
+            <a class="btn secondary-btn" href="/login.html">
+                Login
+            </a>
         </div>
+    </section>
 
-        <!-- 🔥 IMPORTANT: This will be filled by common.js -->
-        <nav class="nav-links" id="topNav"></nav>
-    </header>
+</main>
 
-    <!-- ================= MAIN ================= -->
-    <main class="container">
-        <section class="hero">
-            <h1>Neighborhood Safety & Incident Reporting System</h1>
-            <p>
-                Report local incidents quickly and help authorities respond faster.
-            </p>
+<footer>
+    <small>&copy; <span id="year"></span> Neighborhood Safety System</small>
+</footer>
 
-            <div class="cta-btns">
-                <a class="btn gradient" href="/register.html">Create Account</a>
-                <a class="btn outline" href="/login.html">Resident Login</a>
-            </div>
-        </section>
-    </main>
-
-    <!-- ================= FOOTER ================= -->
-    <footer>
-        <small>&copy; <span id="year"></span> Neighborhood Safety System</small>
-    </footer>
-
-    <!-- ================= SCRIPTS ================= -->
-
-    <!-- 🔥 ORDER MATTERS -->
-    <script src="/js/api.js"></script>
-    <script src="/js/common.js"></script>
+<!-- SCRIPTS -->
+<script src="/js/api.js"></script>
+<script src="/js/common.js"></script>
 
 </body>
-
 </html>
