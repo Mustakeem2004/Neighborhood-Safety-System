@@ -33,7 +33,7 @@ const redirectIfNoAuth = () => {
 };
 
 const redirectIfNotAdmin = () => {
-  const user = window.API.getUser();
+  const user = window.API?.getUser?.();
   if (!user || user.role !== "admin") {
     showToast("Admin access required", "error");
 
@@ -48,7 +48,7 @@ const renderNav = () => {
   const navRoot = document.getElementById("topNav");
   if (!navRoot) return;
 
-  const user = window.API.getUser();
+  const user = window.API?.getUser?.();
 
   const links = [
     { href: "/index.html", label: "Home" },

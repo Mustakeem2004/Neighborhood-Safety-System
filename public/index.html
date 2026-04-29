@@ -25,14 +25,8 @@
             Neighborhood Safety
         </div>
 
-        <nav class="nav-links" id="navLinks">
-            <a href="/index.html">Home</a>
-            <a href="/about.html">About</a>
-            <a href="/contact.html">Contact</a>
-            <a href="/dashboard.html">Dashboard</a>
-
-            <!-- Dynamic buttons will be added here -->
-        </nav>
+        <!-- 🔥 IMPORTANT: This will be filled by common.js -->
+        <nav class="nav-links" id="topNav"></nav>
     </header>
 
     <!-- ================= MAIN ================= -->
@@ -55,58 +49,11 @@
         <small>&copy; <span id="year"></span> Neighborhood Safety System</small>
     </footer>
 
-    <!-- ================= SCRIPT ================= -->
+    <!-- ================= SCRIPTS ================= -->
 
-<script>
-document.getElementById("year").textContent = new Date().getFullYear();
-
-const nav = document.getElementById("navLinks");
-const token = localStorage.getItem("token");
-
-/* ================= NAVBAR AUTH ================= */
-if (token) {
-    const logoutBtn = document.createElement("button");
-    logoutBtn.className = "btn logout-btn";
-    logoutBtn.textContent = "Logout";
-
-    logoutBtn.addEventListener("click", () => {
-        localStorage.removeItem("token");
-        alert("Logged out successfully!");
-        window.location.href = "/login.html";
-    });
-
-    nav.appendChild(logoutBtn);
-
-} else {
-    const loginLink = document.createElement("a");
-    loginLink.href = "/login.html";
-    loginLink.textContent = "Login";
-
-    const registerLink = document.createElement("a");
-    registerLink.href = "/register.html";
-    registerLink.textContent = "Register";
-
-    nav.appendChild(loginLink);
-    nav.appendChild(registerLink);
-}
-
-/* ================= ACTIVE LINK ================= */
-const links = document.querySelectorAll(".nav-links a");
-
-links.forEach(link => {
-    const path = link.getAttribute("href");
-
-    if (window.location.pathname.includes(path)) {
-        link.classList.add("active");
-    }
-});
-
-/* ================= PROTECTION ================= */
-// Prevent access to dashboard without login
-if (!token && window.location.pathname.includes("dashboard.html")) {
-    window.location.href = "/login.html";
-}
-</script>
+    <!-- 🔥 ORDER MATTERS -->
+    <script src="/js/api.js"></script>
+    <script src="/js/common.js"></script>
 
 </body>
 
