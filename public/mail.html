@@ -8,8 +8,7 @@
     <link rel="stylesheet" href="/css/styles.css">
 
     <!-- ICONS -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 
 <body>
@@ -95,30 +94,32 @@
     <!-- JS -->
     <script src="/js/api.js"></script>
     <script src="/js/common.js"></script>
-
     <script>
         document.getElementById("year").textContent = new Date().getFullYear();
 
-        const form = document.getElementById("mailForm");
+        // Render navigation bar if needed
+        if (typeof renderNav === "function") renderNav();
+        else if (window.APP && window.APP.renderNav) window.APP.renderNav();
 
+        const form = document.getElementById("mailForm");
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
-
             const formData = new FormData(form);
             const payload = Object.fromEntries(formData.entries());
-
             try {
-                // 👉 Replace with backend API later
-                await window.API?.apiRequest?.("/mail", {
-                    method: "POST",
-                    body: payload,
-                });
-
-                alert("Message sent successfully!");
+                // This endpoint does not exist yet, so just show a toast for now
+                if (window.APP && window.APP.showToast) {
+                    window.APP.showToast("Message sent successfully! (Demo only)", "success");
+                } else {
+                    alert("Message sent successfully! (Demo only)");
+                }
                 form.reset();
-
             } catch (err) {
-                alert(err.message || "Something went wrong");
+                if (window.APP && window.APP.showToast) {
+                    window.APP.showToast(err.message || "Something went wrong", "error");
+                } else {
+                    alert(err.message || "Something went wrong");
+                }
             }
         });
     </script>

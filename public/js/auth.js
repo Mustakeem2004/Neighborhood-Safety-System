@@ -93,6 +93,9 @@ document.addEventListener("DOMContentLoaded", () => {
           body: payload,
         });
 
+        // Clear any existing auth info to prevent redirect loop
+        window.API.clearAuth && window.API.clearAuth();
+
         window.APP.showToast("Registered! Waiting for admin approval.", "success");
 
         registerForm.reset();
