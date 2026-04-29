@@ -2,15 +2,34 @@ document.addEventListener("DOMContentLoaded", () => {
   window.APP.redirectIfNoAuth();
 
   const reportForm = document.getElementById("reportForm");
-
-  if (!reportForm) return; // ✅ prevents crash on other pages
+  if (!reportForm) return;
 
   const submitBtn = reportForm.querySelector("button");
 
+  /* ================= IMAGE PREVIEW ================= */
+  const imageInput = reportForm.querySelector('input[name="image"]');
+  const previewBox = document.getElementById("imagePreview");
+
+  if (imageInput && previewBox) {
+    imageInput.addEventListener("input", () => {
+      const url = imageInput.value.trim();
+
+      if (!url) {
+        previewBox.innerHTML = "";
+        return;
+      }
+
+      previewBox.innerHTML = `
+        <p class="muted">Preview:</p>
+        <img src="${url}" alt="Preview" />
+      `;
+    });
+  }
+
+  /* ================= SUBMIT ================= */
   reportForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    // 🔒 Prevent multiple clicks
     submitBtn.disabled = true;
     submitBtn.textContent = "Submitting...";
 
@@ -21,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
       description: formData.get("description")?.trim(),
       type: formData.get("type"),
       location: formData.get("location")?.trim(),
-      image: formData.get("image"), // file or URL
+      image: formData.get("image"),
     };
 
     /* ================= VALIDATION ================= */
@@ -42,6 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
       window.APP.showToast("Report submitted successfully", "success");
 
       reportForm.reset();
+      previewBox.innerHTML = ""; // ✅ clear preview
 
       setTimeout(() => {
         window.location.href = "/dashboard.html";

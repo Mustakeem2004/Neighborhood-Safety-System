@@ -1,3 +1,5 @@
+let statusChartInstance;
+let typeChartInstance;
 document.addEventListener("DOMContentLoaded", () => {
   window.APP.redirectIfNoAuth();
   window.APP.redirectIfNotAdmin();
@@ -151,6 +153,58 @@ document.addEventListener("DOMContentLoaded", () => {
       window.APP.showToast(error.message, "error");
     }
   });
+  
+
+const loadAnalytics = async () => {
+  try {
+    const data = await window.API.apiRequest("/analytics", { auth: true });
+
+    /* TOTAL */
+    document.getElementById("totalIncidents").textContent = data.total;
+
+    /* STATUS CHART */
+    const statusCtx = document.getElementById("statusChart");
+
+    if (statusChartInstance) statusChartInstance.destroy();
+
+    statusChartInstance = new Chart(statusCtx, {
+      type: "doughnut",
+      data: {
+        labels: ["Pending", "Verified", "Resolved"],
+        datasets: [{
+          data: [
+            data.status.pending,
+            data.status.verified,
+            data.status.resolved
+          ],
+        }]
+      }
+    });
+
+    /* TYPE CHART */
+    const typeCtx = document.getElementById("typeChart");
+
+    if (typeChartInstance) typeChartInstance.destroy();
+
+    typeChartInstance = new Chart(typeCtx, {
+      type: "bar",
+      data: {
+        labels: data.byType.map(i => i._id),
+        datasets: [{
+          label: "Incidents",
+          data: data.byType.map(i => i.count),
+        }]
+      }
+    });
+
+  } catch (err) {
+    console.error(err);
+    window.APP.showToast("Failed to load analytics", "error");
+  }
+};
+
+
+
 
   /* ================= DELETE INCIDENT ================= */
   incidentTableBody.addEventListener("click", async (event) => {
@@ -182,7 +236,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+
+
   /* ================= INIT ================= */
   loadUsers();
   loadIncidents();
+  loadAnalytics();
 });

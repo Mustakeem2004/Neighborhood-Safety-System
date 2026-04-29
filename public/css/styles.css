@@ -382,3 +382,22 @@ footer {
 .toggle-password:hover {
   color: #0d7c66;
 }
+
+
+textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+#imagePreview img {
+  max-width: 100%;
+  border-radius: 10px;
+  margin-top: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+canvas {
+  background: #fff;
+  padding: 12px;
+  border-radius: 12px;
+}

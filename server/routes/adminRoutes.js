@@ -14,5 +14,6 @@ router.get("/users", auth, admin, getUsers);
 router.put("/users/:id/approve", auth, admin, approveUser);
 router.put("/incidents/:id/status", auth, admin, updateIncidentStatus);
 router.delete("/incidents/:id", auth, admin, deleteIncident);
+router.get("/analytics", auth, admin, getAnalytics);
 
 module.exports = router;

@@ -78,3 +78,28 @@ exports.deleteIncident = async (req, res) => {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+
+/* ================= ANALYTICS ================= */
+exports.getAnalytics = async (req, res) => {
+  try {
+    const total = await Incident.countDocuments();
+
+    const pending = await Incident.countDocuments({ status: "Pending" });
+    const verified = await Incident.countDocuments({ status: "Verified" });
+    const resolved = await Incident.countDocuments({ status: "Resolved" });
+
+    const byType = await Incident.aggregate([
+      { $group: { _id: "$type", count: { $sum: 1 } } },
+    ]);
+
+    res.json({
+      total,
+      status: { pending, verified, resolved },
+      byType,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

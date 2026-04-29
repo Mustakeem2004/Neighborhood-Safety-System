@@ -86,3 +86,59 @@ exports.getIncidentById = async (req, res) => {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+
+
+/* ================= UPDATE STATUS ================= */
+exports.updateIncidentStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    const incident = await Incident.findById(req.params.id);
+
+    if (!incident) {
+      return res.status(404).json({ message: "Incident not found" });
+    }
+
+    incident.status = status;
+    await incident.save();
+
+    return res.status(200).json({
+      message: "Status updated successfully",
+      incident,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
+/* ================= DELETE INCIDENT ================= */
+exports.deleteIncident = async (req, res) => {
+  try {
+    const incident = await Incident.findById(req.params.id);
+
+    if (!incident) {
+      return res.status(404).json({ message: "Incident not found" });
+    }
+
+    await incident.deleteOne();
+
+    return res.status(200).json({
+      message: "Incident deleted successfully",
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
