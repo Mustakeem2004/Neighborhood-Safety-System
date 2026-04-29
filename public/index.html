@@ -56,47 +56,57 @@
     </footer>
 
     <!-- ================= SCRIPT ================= -->
-    <script>
+// Set year
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
 
-        // Set year
-        document.getElementById("year").textContent = new Date().getFullYear();
+const nav = document.getElementById("navLinks");
+const token = localStorage.getItem("token");
 
-        const nav = document.getElementById("navLinks");
+/* ================= NAVBAR AUTH ================= */
+if (token) {
+    const logoutBtn = document.createElement("button");
+    logoutBtn.className = "btn logout-btn";
+    logoutBtn.textContent = "Logout";
 
-        // Check login status
-        const token = localStorage.getItem("token");
+    logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("token");
+        alert("Logged out successfully!");
+        window.location.href = "/login.html";
+    });
 
-        if (token) {
-            // USER LOGGED IN → SHOW LOGOUT
-            nav.innerHTML += `
-                <button class="btn logout-btn">Logout</button>
-            `;
-        } else {
-            // USER NOT LOGGED IN → SHOW LOGIN + REGISTER
-            nav.innerHTML += `
-                <a href="/login.html">Login</a>
-                <a href="/register.html">Register</a>
-            `;
-        }
+    nav.appendChild(logoutBtn);
 
-        // Handle Logout
-        document.addEventListener("click", function (e) {
-            if (e.target.classList.contains("logout-btn")) {
-                localStorage.removeItem("token");
-                alert("Logged out successfully!");
-                window.location.href = "/login.html";
-            }
-        });
+} else {
+    const loginLink = document.createElement("a");
+    loginLink.href = "/login.html";
+    loginLink.textContent = "Login";
 
-        // Highlight active link
-        const links = document.querySelectorAll(".nav-links a");
-        links.forEach(link => {
-            if (window.location.pathname.includes(link.getAttribute("href"))) {
-                link.classList.add("active");
-            }
-        });
+    const registerLink = document.createElement("a");
+    registerLink.href = "/register.html";
+    registerLink.textContent = "Register";
 
-    </script>
+    nav.appendChild(loginLink);
+    nav.appendChild(registerLink);
+}
+
+/* ================= ACTIVE LINK ================= */
+const links = document.querySelectorAll(".nav-links a");
+
+links.forEach(link => {
+    const path = link.getAttribute("href");
+
+    if (window.location.pathname.includes(path)) {
+        link.classList.add("active");
+    }
+});
+
+/* ================= PROTECTION ================= */
+// Prevent access to dashboard without login
+if (!token && window.location.pathname.includes("dashboard.html")) {
+    window.location.href = "/login.html";
+}
+</script>
 
 </body>
 

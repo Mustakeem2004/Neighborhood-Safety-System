@@ -4,13 +4,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <title>Contact | Neighborhood Safety</title>
+    <link rel="stylesheet" href="/css/styles.css">
+
+    <!-- ICONS -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 
 <body>
-    <h1>Contact</h1>
-    <p>Contact us using the information provided on this page.</p>
+
+    <!-- NAVBAR -->
+    <header class="topbar">
+        <div class="brand">Neighborhood Safety</div>
+        <nav id="topNav" class="nav-links"></nav>
+    </header>
+
+    <!-- MAIN -->
+    <main class="container">
+
+        <!-- HEADER -->
+        <section class="hero">
+            <h1>Contact Us</h1>
+            <p>We’re here to help. Reach out to us anytime.</p>
+        </section>
+
+        <!-- CONTACT GRID -->
+        <section class="cards-row">
+
+            <!-- CONTACT INFO -->
+            <div class="modern-card">
+                <h2>📍 Our Office</h2>
+                <p class="muted">Karimpur, West Bengal, India</p>
+
+                <h2>📞 Phone</h2>
+                <p class="muted">+91 98765 43210</p>
+
+                <h2>📧 Email</h2>
+                <p class="muted">support@neighborhoodsafety.com</p>
+            </div>
+
+            <!-- CONTACT FORM -->
+            <div class="modern-card">
+
+                <h2>Send a Message</h2>
+
+                <form id="contactForm">
+
+                    <label>
+                        Name
+                        <input type="text" name="name" required />
+                    </label>
+
+                    <label>
+                        Email
+                        <input type="email" name="email" required />
+                    </label>
+
+                    <label>
+                        Message
+                        <textarea name="message" required></textarea>
+                    </label>
+
+                    <button type="submit" class="btn gradient full">
+                        Send Message
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <small>&copy; <span id="year"></span> Neighborhood Safety System</small>
+    </footer>
+
+    <!-- JS -->
+    <script src="/js/api.js"></script>
+    <script src="/js/common.js"></script>
+
+    <script>
+        document.getElementById("year").textContent = new Date().getFullYear();
+
+        const form = document.getElementById("contactForm");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            const payload = Object.fromEntries(formData.entries());
+
+            try {
+                // 👉 Replace with backend API later
+                await window.API?.apiRequest?.("/contact", {
+                    method: "POST",
+                    body: payload,
+                });
+
+                alert("Message sent successfully!");
+                form.reset();
+
+            } catch (err) {
+                alert(err.message || "Something went wrong");
+            }
+        });
+    </script>
+
 </body>
 
 </html>

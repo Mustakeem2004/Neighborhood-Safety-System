@@ -4,13 +4,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <title>About | Neighborhood Safety</title>
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 
 <body>
-    <h1>About</h1>
-    <p>This page provides information about the site and its purpose.</p>
+
+    <!-- NAVBAR -->
+    <header class="topbar">
+        <div class="brand">Neighborhood Safety</div>
+        <nav id="topNav" class="nav-links"></nav>
+    </header>
+
+    <!-- MAIN -->
+    <main class="container">
+
+        <!-- HERO -->
+        <section class="hero">
+            <h1>About Our Platform</h1>
+            <p>
+                Neighborhood Safety & Incident Reporting System is designed to empower
+                communities by providing a fast, transparent, and reliable way to report
+                and manage local incidents.
+            </p>
+        </section>
+
+        <!-- MISSION -->
+        <section class="modern-card">
+            <h2>🎯 Our Mission</h2>
+            <p class="muted">
+                Our goal is to create safer neighborhoods by enabling residents to
+                report incidents in real-time and helping administrators respond
+                quickly and effectively. We aim to bridge the gap between citizens
+                and local authorities using technology.
+            </p>
+        </section>
+
+        <!-- FEATURES -->
+        <section class="cards-row">
+
+            <div class="modern-card">
+                <h2>📝 Easy Reporting</h2>
+                <p class="muted">
+                    Residents can quickly report incidents with detailed descriptions,
+                    ensuring accurate information reaches the authorities.
+                </p>
+            </div>
+
+            <div class="modern-card">
+                <h2>📊 Real-Time Tracking</h2>
+                <p class="muted">
+                    Track the status of incidents from Pending → Verified → Resolved
+                    with full transparency.
+                </p>
+            </div>
+
+            <div class="modern-card">
+                <h2>🛡️ Admin Control</h2>
+                <p class="muted">
+                    Admins can verify reports, manage users, and ensure only valid
+                    incidents are processed.
+                </p>
+            </div>
+
+        </section>
+
+        <!-- HOW IT WORKS -->
+        <section class="modern-card">
+            <h2>⚙️ How It Works</h2>
+            <ul class="muted">
+                <li>✔ Residents register and get approved by admin</li>
+                <li>✔ Submit incident reports with details</li>
+                <li>✔ Admin reviews and verifies incidents</li>
+                <li>✔ Status updates are visible to all users</li>
+            </ul>
+        </section>
+
+        <!-- TECH STACK -->
+        <section class="modern-card">
+            <h2>💻 Technology Used</h2>
+            <p class="muted">
+                This system is built using modern web technologies including
+                HTML, CSS, JavaScript, Node.js, and MongoDB, ensuring scalability,
+                performance, and reliability.
+            </p>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <small>&copy; <span id="year"></span> Neighborhood Safety System</small>
+    </footer>
+
+    <!-- JS -->
+    <script src="/js/common.js"></script>
+    <script>
+        document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+
 </body>
 
 </html>

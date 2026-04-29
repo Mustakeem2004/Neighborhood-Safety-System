@@ -5,43 +5,80 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login | Neighborhood Safety</title>
+
+    <!-- CSS -->
     <link rel="stylesheet" href="/css/styles.css" />
+
+    <!-- ICONS -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 
 <body>
+
+    <!-- NAVBAR -->
     <header class="topbar">
         <div class="brand">Neighborhood Safety</div>
         <nav id="topNav" class="nav-links"></nav>
     </header>
 
-    <main class="container" style="max-width: 620px">
-        <section class="card">
-            <h1>Login</h1>
-            <p class="muted">Access your dashboard and incident reporting tools.</p>
+    <!-- MAIN -->
+    <main class="auth-container">
+        <section class="auth-card">
 
-            <form id="loginForm">
-                <label>
-                    Email
-                    <input type="email" name="email" required />
-                </label>
+            <h1>Welcome Back 👋</h1>
+            <p class="muted">
+                Login to access your dashboard and report incidents.
+            </p>
 
-                <label>
-                    Password
-                    <input type="password" name="password" required />
-                </label>
+            <form id="loginForm" class="auth-form">
 
-                <button class="primary" type="submit">Login</button>
+                <!-- EMAIL -->
+                <div class="form-field">
+                    <label>Email</label>
+                    <input type="email" name="email" placeholder="Enter your email" required />
+                </div>
+
+                <!-- PASSWORD -->
+                <div class="form-field password-field">
+                    <label>Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" name="password" placeholder="Enter your password" required />
+                        <span class="toggle-password">
+                            <i class="fa-solid fa-eye"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- BUTTON -->
+                <button class="btn gradient full" type="submit">
+                    Login
+                </button>
+
+                <!-- SWITCH -->
+                <p class="switch">
+                    Don’t have an account?
+                    <a href="/register.html">Register</a>
+                </p>
+
             </form>
         </section>
     </main>
 
+    <!-- FOOTER -->
     <footer>
-        <small>Neighborhood Safety System <span id="year"></span></small>
+        <small>&copy; <span id="year"></span> Neighborhood Safety System</small>
     </footer>
 
+    <!-- JS -->
     <script src="/js/api.js"></script>
     <script src="/js/common.js"></script>
     <script src="/js/auth.js"></script>
+
+    <script>
+        document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+
 </body>
 
 </html>

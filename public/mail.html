@@ -4,13 +4,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mail</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <title>Mail | Neighborhood Safety</title>
+    <link rel="stylesheet" href="/css/styles.css">
+
+    <!-- ICONS -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 
 <body>
-    <h1>Mail</h1>
-    <p>Send us mail or feedback through this page.</p>
+
+    <!-- NAVBAR -->
+    <header class="topbar">
+        <div class="brand">Neighborhood Safety</div>
+        <nav id="topNav" class="nav-links"></nav>
+    </header>
+
+    <!-- MAIN -->
+    <main class="auth-container">
+
+        <section class="auth-card">
+
+            <h1>📩 Contact Us</h1>
+            <p class="muted">
+                Send us your feedback, suggestions, or report any issues.
+            </p>
+
+            <form id="mailForm" class="auth-form">
+
+                <div class="form-grid">
+
+                    <!-- NAME -->
+                    <div class="form-field">
+                        <label>Your Name</label>
+                        <input type="text" name="name" placeholder="Enter your name" required />
+                    </div>
+
+                    <!-- EMAIL -->
+                    <div class="form-field">
+                        <label>Your Email</label>
+                        <input type="email" name="email" placeholder="Enter your email" required />
+                    </div>
+
+                    <!-- SUBJECT -->
+                    <div class="form-field">
+                        <label>Subject</label>
+                        <input type="text" name="subject" placeholder="Enter subject" required />
+                    </div>
+
+                    <!-- PRIORITY -->
+                    <div class="form-field">
+                        <label>Priority</label>
+                        <select name="priority">
+                            <option>Normal</option>
+                            <option>High</option>
+                            <option>Urgent</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <!-- MESSAGE -->
+                <div class="form-field">
+                    <label>Message</label>
+                    <textarea name="message" placeholder="Write your message..." required></textarea>
+                </div>
+
+                <!-- BUTTON -->
+                <button type="submit" class="btn gradient full">
+                    Send Message
+                </button>
+
+            </form>
+
+            <!-- EXTRA INFO -->
+            <div style="margin-top:20px; text-align:center;" class="muted">
+                <p><i class="fa-solid fa-envelope"></i> support@neighborhoodsafety.com</p>
+                <p><i class="fa-solid fa-phone"></i> +91 98765 43210</p>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <small>&copy; <span id="year"></span> Neighborhood Safety System</small>
+    </footer>
+
+    <!-- JS -->
+    <script src="/js/api.js"></script>
+    <script src="/js/common.js"></script>
+
+    <script>
+        document.getElementById("year").textContent = new Date().getFullYear();
+
+        const form = document.getElementById("mailForm");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            const payload = Object.fromEntries(formData.entries());
+
+            try {
+                // 👉 Replace with backend API later
+                await window.API?.apiRequest?.("/mail", {
+                    method: "POST",
+                    body: payload,
+                });
+
+                alert("Message sent successfully!");
+                form.reset();
+
+            } catch (err) {
+                alert(err.message || "Something went wrong");
+            }
+        });
+    </script>
+
 </body>
 
 </html>

@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("loginForm");
   const registerForm = document.getElementById("registerForm");
 
+  /* ================= LOGIN ================= */
   if (loginForm) {
     loginForm.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -19,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         window.API.setAuth(data.token, data.user);
+
         if (data.user.role === "user" && data.user.isApproved) {
           window.APP.showToast("Approved by admin. Welcome.", "success");
         } else {
@@ -26,7 +28,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         setTimeout(() => {
-          window.location.href = data.user.role === "admin" ? "/admin.html" : "/dashboard.html";
+          window.location.href =
+            data.user.role === "admin"
+              ? "/admin.html"
+              : "/dashboard.html";
         }, 300);
       } catch (error) {
         window.APP.showToast(error.message, "error");
@@ -34,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /* ================= REGISTER ================= */
   if (registerForm) {
     registerForm.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -63,4 +69,21 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-});
+
+  /* ================= PASSWORD TOGGLE ================= */
+  document.querySelectorAll(".toggle-password").forEach((toggle) => {
+    toggle.addEventListener("click", () => {
+      const input = toggle.previousElementSibling;
+      const icon = toggle.querySelector("i");
+
+      if (input.type === "password") {
+        input.type = "text";
+        icon.classList.replace("fa-eye", "fa-eye-slash");
+      } else {
+        input.type = "password";
+        icon.classList.replace("fa-eye-slash", "fa-eye");
+      }
+    });
+  });
+
+}); 

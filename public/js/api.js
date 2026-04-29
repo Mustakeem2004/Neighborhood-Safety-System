@@ -3,6 +3,7 @@ const API_BASE =
     ? "/api"
     : "https://neighborhood-safety-system.onrender.com/api";
 
+/* ================= AUTH ================= */
 const getToken = () => localStorage.getItem("token");
 
 const setAuth = (token, user) => {
@@ -18,20 +19,28 @@ const clearAuth = () => {
 const getUser = () => {
   try {
     return JSON.parse(localStorage.getItem("user") || "null");
-  } catch (error) {
+  } catch {
     return null;
   }
 };
 
+/* ================= API REQUEST ================= */
 const apiRequest = async (path, options = {}) => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000); // ⏳ 10s timeout
+
+  const isFormData = options.body instanceof FormData;
+
   const config = {
     method: options.method || "GET",
     headers: {
-      "Content-Type": "application/json",
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...(options.headers || {}),
     },
+    signal: controller.signal,
   };
 
+  /* AUTH HEADER */
   if (options.auth) {
     const token = getToken();
     if (token) {
@@ -39,26 +48,47 @@ const apiRequest = async (path, options = {}) => {
     }
   }
 
+  /* BODY */
   if (options.body) {
-    config.body = JSON.stringify(options.body);
+    config.body = isFormData
+      ? options.body
+      : JSON.stringify(options.body);
   }
 
-  const response = await fetch(`${API_BASE}${path}`, config);
-
-  let payload;
   try {
-    payload = await response.json();
+    const response = await fetch(`${API_BASE}${path}`, config);
+    clearTimeout(timeout);
+
+    let payload;
+    try {
+      payload = await response.json();
+    } catch {
+      payload = { message: "Invalid server response" };
+    }
+
+    /* 🔥 HANDLE UNAUTHORIZED */
+    if (response.status === 401) {
+      clearAuth();
+      window.location.href = "/login.html";
+      throw new Error("Session expired. Please login again.");
+    }
+
+    if (!response.ok) {
+      throw new Error(payload.message || "Request failed");
+    }
+
+    return payload;
+
   } catch (error) {
-    payload = { message: "Unexpected response from server" };
-  }
+    if (error.name === "AbortError") {
+      throw new Error("Request timeout. Try again.");
+    }
 
-  if (!response.ok) {
-    throw new Error(payload.message || "Request failed");
+    throw error;
   }
-
-  return payload;
 };
 
+/* ================= EXPORT ================= */
 window.API = {
   apiRequest,
   getToken,

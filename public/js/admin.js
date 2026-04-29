@@ -5,10 +5,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const userTableBody = document.getElementById("userTableBody");
   const incidentTableBody = document.getElementById("incidentTableBody");
 
+  /* ================= LOADING HELPERS ================= */
+  const setLoading = (el, text = "Loading...") => {
+    if (el) el.innerHTML = `<tr><td colspan="6" class="muted">${text}</td></tr>`;
+  };
+
+  /* ================= LOAD USERS ================= */
   const loadUsers = async () => {
     try {
+      setLoading(userTableBody);
+
       const users = await window.API.apiRequest("/users", { auth: true });
       userTableBody.innerHTML = "";
+
+      if (!users.length) {
+        setLoading(userTableBody, "No users found");
+        return;
+      }
 
       users.forEach((user) => {
         const row = document.createElement("tr");
@@ -23,24 +36,36 @@ document.addEventListener("DOMContentLoaded", () => {
             ${
               user.role === "admin"
                 ? "-"
-                : `<button class="primary" data-action="toggle-approve" data-id="${user._id}" data-approved="${user.isApproved}">${
-                    user.isApproved ? "Revoke" : "Approve"
-                  }</button>`
+                : `<button class="btn gradient"
+                    data-action="toggle-approve"
+                    data-id="${user._id}"
+                    data-approved="${user.isApproved}">
+                    ${user.isApproved ? "Revoke" : "Approve"}
+                  </button>`
             }
           </td>
         `;
 
         userTableBody.appendChild(row);
       });
+
     } catch (error) {
       window.APP.showToast(error.message, "error");
     }
   };
 
+  /* ================= LOAD INCIDENTS ================= */
   const loadIncidents = async () => {
     try {
-      const incidents = await window.API.apiRequest("/incidents");
+      setLoading(incidentTableBody);
+
+      const incidents = await window.API.apiRequest("/incidents", { auth: true });
       incidentTableBody.innerHTML = "";
+
+      if (!incidents.length) {
+        setLoading(incidentTableBody, "No incidents found");
+        return;
+      }
 
       incidents.forEach((incident) => {
         const row = document.createElement("tr");
@@ -58,26 +83,32 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>${incident.location}</td>
           <td>${incident.reportedBy?.name || "Unknown"}</td>
           <td>
-            <button class="btn light" data-action="delete" data-id="${incident._id}">Delete</button>
+            <button class="btn outline" data-action="delete" data-id="${incident._id}">
+              Delete
+            </button>
           </td>
         `;
 
         incidentTableBody.appendChild(row);
       });
+
     } catch (error) {
       window.APP.showToast(error.message, "error");
     }
   };
 
+  /* ================= USER ACTION ================= */
   userTableBody.addEventListener("click", async (event) => {
     const target = event.target;
-    if (!(target instanceof HTMLButtonElement)) {
-      return;
-    }
+
+    if (!(target instanceof HTMLButtonElement)) return;
 
     if (target.dataset.action === "toggle-approve") {
       const userId = target.dataset.id;
       const currentlyApproved = target.dataset.approved === "true";
+
+      target.disabled = true;
+      target.textContent = "Processing...";
 
       try {
         await window.API.apiRequest(`/users/${userId}/approve`, {
@@ -87,21 +118,23 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         window.APP.showToast(
-          currentlyApproved ? "Approval revoked" : "Approved by admin",
+          currentlyApproved ? "Approval revoked" : "User approved",
           "success"
         );
+
         await loadUsers();
+
       } catch (error) {
         window.APP.showToast(error.message, "error");
       }
     }
   });
 
+  /* ================= STATUS CHANGE ================= */
   incidentTableBody.addEventListener("change", async (event) => {
     const target = event.target;
-    if (!(target instanceof HTMLSelectElement) || target.dataset.action !== "status") {
-      return;
-    }
+
+    if (!(target instanceof HTMLSelectElement) || target.dataset.action !== "status") return;
 
     const incidentId = target.dataset.id;
 
@@ -111,32 +144,45 @@ document.addEventListener("DOMContentLoaded", () => {
         auth: true,
         body: { status: target.value },
       });
-      window.APP.showToast("Incident status updated", "success");
+
+      window.APP.showToast("Status updated", "success");
+
     } catch (error) {
       window.APP.showToast(error.message, "error");
     }
   });
 
+  /* ================= DELETE INCIDENT ================= */
   incidentTableBody.addEventListener("click", async (event) => {
     const target = event.target;
-    if (!(target instanceof HTMLButtonElement) || target.dataset.action !== "delete") {
-      return;
-    }
+
+    if (!(target instanceof HTMLButtonElement) || target.dataset.action !== "delete") return;
 
     const incidentId = target.dataset.id;
+
+    /* 🔥 CONFIRMATION */
+    const confirmDelete = confirm("Are you sure you want to delete this incident?");
+    if (!confirmDelete) return;
+
+    target.disabled = true;
+    target.textContent = "Deleting...";
 
     try {
       await window.API.apiRequest(`/incidents/${incidentId}`, {
         method: "DELETE",
         auth: true,
       });
+
       window.APP.showToast("Incident deleted", "success");
+
       await loadIncidents();
+
     } catch (error) {
       window.APP.showToast(error.message, "error");
     }
   });
 
+  /* ================= INIT ================= */
   loadUsers();
   loadIncidents();
 });

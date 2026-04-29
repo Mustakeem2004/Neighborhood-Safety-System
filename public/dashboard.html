@@ -5,77 +5,208 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard | Neighborhood Safety</title>
+
     <link rel="stylesheet" href="/css/styles.css" />
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 
 <body>
-    <header class="topbar">
-        <div class="brand">Neighborhood Safety</div>
-        <nav id="topNav" class="nav-links"></nav>
-    </header>
 
-    <main class="container">
-        <section class="card">
-            <h1>Incident Dashboard</h1>
-            <p id="welcomeText" class="muted"></p>
-        </section>
+<header class="topbar">
+    <div class="brand">Neighborhood Safety</div>
+    <nav id="topNav" class="nav-links"></nav>
+</header>
 
-        <section class="card" style="margin-top: 14px">
-            <h2>Search & Filters</h2>
-            <form id="filterForm" class="row two">
-                <label>
-                    Type
-                    <select name="type">
-                        <option value="">All Types</option>
-                        <option value="Crime">Crime</option>
-                        <option value="Accident">Accident</option>
-                        <option value="Emergency">Emergency</option>
-                        <option value="Suspicious Activity">Suspicious Activity</option>
-                    </select>
-                </label>
+<main class="container">
 
-                <label>
-                    Status
-                    <select name="status">
-                        <option value="">All Status</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Verified">Verified</option>
-                        <option value="Resolved">Resolved</option>
-                    </select>
-                </label>
+    <!-- HERO -->
+    <section class="card">
+        <h1>Incident Dashboard</h1>
+        <p id="welcomeText" class="muted"></p>
+    </section>
 
-                <label>
-                    Location
-                    <input type="text" name="location" placeholder="Street / area" />
-                </label>
+    <!-- STATS -->
+    <section class="cards-row">
+        <div class="modern-card">
+            <h2>Total</h2>
+            <p id="totalCount">0</p>
+        </div>
+        <div class="modern-card">
+            <h2>Pending</h2>
+            <p id="pendingCount">0</p>
+        </div>
+        <div class="modern-card">
+            <h2>Verified</h2>
+            <p id="verifiedCount">0</p>
+        </div>
+        <div class="modern-card">
+            <h2>Resolved</h2>
+            <p id="resolvedCount">0</p>
+        </div>
+    </section>
 
-                <label>
-                    Keyword
-                    <input type="text" name="search" placeholder="Title or description" />
-                </label>
+    <!-- MAP -->
+    <section class="card" style="margin-top:20px">
+        <h2>Incident Map</h2>
+        <div id="map" style="height:350px;"></div>
+    </section>
 
-                <button class="primary" type="submit">Apply Filters</button>
-                <button class="btn light" type="button" id="clearFiltersBtn">Clear</button>
-            </form>
-        </section>
+    <!-- FILTER -->
+    <section class="card" style="margin-top: 14px">
+        <h2>Search & Filters</h2>
+        <form id="filterForm" class="row two">
 
-        <section class="card" style="margin-top: 14px">
-            <div style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap">
-                <h2 style="margin: 0">Incidents</h2>
-                <a class="btn" href="/report.html">Report New Incident</a>
-            </div>
+            <label>
+                Type
+                <select name="type">
+                    <option value="">All</option>
+                    <option value="Crime">Crime</option>
+                    <option value="Accident">Accident</option>
+                    <option value="Emergency">Emergency</option>
+                </select>
+            </label>
 
-            <div id="incidentList" class="list" style="margin-top: 12px"></div>
-        </section>
-    </main>
+            <label>
+                Status
+                <select name="status">
+                    <option value="">All</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Verified">Verified</option>
+                    <option value="Resolved">Resolved</option>
+                </select>
+            </label>
 
-    <footer>
-        <small>Neighborhood Safety System <span id="year"></span></small>
-    </footer>
+            <label>
+                Location
+                <input type="text" name="location" />
+            </label>
 
-    <script src="/js/api.js"></script>
-    <script src="/js/common.js"></script>
-    <script src="/js/dashboard.js"></script>
+            <label>
+                Keyword
+                <input type="text" name="search" />
+            </label>
+
+            <button class="btn gradient" type="submit">Apply</button>
+            <button class="btn outline" type="button" id="clearFiltersBtn">Clear</button>
+
+        </form>
+    </section>
+
+    <!-- INCIDENT LIST -->
+    <section class="card" style="margin-top: 14px">
+        <h2>Incidents</h2>
+
+        <div id="loadingText" class="muted">Loading...</div>
+        <div id="incidentList" class="list"></div>
+
+    </section>
+
+</main>
+
+<footer>
+    <small>&copy; <span id="year"></span></small>
+</footer>
+
+<!-- JS -->
+<script src="/js/api.js"></script>
+<script src="/js/common.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    window.APP.redirectIfNoAuth();
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const user = window.API.getUser();
+    if (user) {
+        document.getElementById("welcomeText").textContent =
+            `Welcome, ${user.name}`;
+    }
+
+    const incidentList = document.getElementById("incidentList");
+    const loadingText = document.getElementById("loadingText");
+    const filterForm = document.getElementById("filterForm");
+    const clearBtn = document.getElementById("clearFiltersBtn");
+
+    /* MAP */
+    const map = L.map('map').setView([28.6139, 77.2090], 10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    let markers = [];
+
+    const renderIncident = (i) => {
+        const el = document.createElement("div");
+        el.className = "modern-card";
+        el.innerHTML = `
+            <h3>${i.title}</h3>
+            <p>${i.description}</p>
+            <p class="muted">${i.location}</p>
+            <span class="badge status-${i.status}">${i.status}</span>
+        `;
+        return el;
+    };
+
+    const loadIncidents = async () => {
+        try {
+            loadingText.style.display = "block";
+            incidentList.innerHTML = "";
+
+            const params = new URLSearchParams(new FormData(filterForm));
+            const data = await window.API.apiRequest("/incidents?" + params);
+
+            loadingText.style.display = "none";
+
+            /* STATS */
+            document.getElementById("totalCount").textContent = data.length;
+            document.getElementById("pendingCount").textContent = data.filter(x => x.status==="Pending").length;
+            document.getElementById("verifiedCount").textContent = data.filter(x => x.status==="Verified").length;
+            document.getElementById("resolvedCount").textContent = data.filter(x => x.status==="Resolved").length;
+
+            /* CLEAR MAP */
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+
+            if (!data.length) {
+                incidentList.innerHTML = "<p class='muted'>No incidents found</p>";
+                return;
+            }
+
+            data.forEach(i => {
+                incidentList.appendChild(renderIncident(i));
+
+                // Fake coordinates (replace with real later)
+                const lat = 28.6 + Math.random() * 0.1;
+                const lng = 77.2 + Math.random() * 0.1;
+
+                const marker = L.marker([lat, lng]).addTo(map)
+                    .bindPopup(i.title);
+
+                markers.push(marker);
+            });
+
+        } catch (err) {
+            loadingText.style.display = "none";
+            window.APP.showToast(err.message, "error");
+        }
+    };
+
+    filterForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        loadIncidents();
+    });
+
+    clearBtn.addEventListener("click", () => {
+        filterForm.reset();
+        loadIncidents();
+    });
+
+    loadIncidents();
+});
+</script>
+
 </body>
-
 </html>

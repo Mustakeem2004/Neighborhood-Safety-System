@@ -232,3 +232,153 @@ footer {
     flex-direction: column;
   }
 }
+
+
+
+/* ===== AUTH PAGE ===== */
+.auth-container {
+  min-height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 600px;
+  background: white;
+  padding: 35px;
+  border-radius: 18px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+}
+
+.auth-card h1 {
+  margin-bottom: 5px;
+}
+
+.auth-form {
+  margin-top: 20px;
+}
+
+/* GRID */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+/* FIELD */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-field input {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  transition: 0.2s;
+}
+
+.form-field input:focus {
+  border-color: #0d7c66;
+  box-shadow: 0 0 0 2px rgba(13,124,102,0.2);
+  outline: none;
+}
+
+/* BUTTON FULL */
+.btn.full {
+  width: 100%;
+  margin-top: 15px;
+  padding: 12px;
+}
+
+/* SWITCH */
+.switch {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.9rem;
+}
+
+.switch a {
+  color: #0d7c66;
+  font-weight: 600;
+}
+
+/* MOBILE FIX */
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* PASSWORD FIELD */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  width: 100%;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  opacity: 0.6;
+}
+
+.toggle-password:hover {
+  opacity: 1;
+}
+
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  color: #888;
+}
+
+.toggle-password:hover {
+  color: #0d7c66;
+}
+
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  color: #888;
+}
+
+.toggle-password:hover {
+  color: #0d7c66;
+}
