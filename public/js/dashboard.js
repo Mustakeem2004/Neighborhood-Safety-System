@@ -35,9 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       document.getElementById("totalIncidents").textContent = data.total;
 
-      /* STATUS CHART */
       const statusCtx = document.getElementById("statusChart");
-
       if (statusChartInstance) statusChartInstance.destroy();
 
       statusChartInstance = new Chart(statusCtx, {
@@ -54,9 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
 
-      /* TYPE CHART */
       const typeCtx = document.getElementById("typeChart");
-
       if (typeChartInstance) typeChartInstance.destroy();
 
       typeChartInstance = new Chart(typeCtx, {
@@ -98,14 +94,51 @@ document.addEventListener("DOMContentLoaded", () => {
       markers.forEach(marker => map.removeLayer(marker));
       markers = [];
 
-      /* RENDER */
+      /* RENDER INCIDENTS */
       data.forEach(incident => {
         const div = document.createElement("div");
         div.className = "modern-card";
 
         div.innerHTML = `
           <h3>${incident.title}</h3>
+
+          <div style="margin:10px 0;">
+            <span style="background:#eee; padding:4px 8px; border-radius:6px; margin-right:5px;">
+              ${incident.type}
+            </span>
+
+            <span style="background:#d1ecf1; padding:4px 8px; border-radius:6px; margin-right:5px;">
+              ${incident.status}
+            </span>
+
+            <span style="background:#f8d7da; padding:4px 8px; border-radius:6px;">
+              ${incident.location}
+            </span>
+          </div>
+
           <p>${incident.description}</p>
+
+          <p style="font-size:12px; color:#666;">
+            Reported by: ${incident.reportedBy?.name || "Unknown"}
+          </p>
+
+          ${
+            incident.image
+              ? `
+              <img src="${incident.image}" 
+                style="
+                  max-width:300px;
+                  width:100%;
+                  height:auto;
+                  border-radius:10px;
+                  margin-top:10px;
+                  border:1px solid #ddd;
+                "
+                onerror="this.style.display='none'"
+              />
+            `
+              : ""
+          }
         `;
 
         incidentList.appendChild(div);
@@ -113,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (incident.lat && incident.lng) {
           const marker = L.marker([incident.lat, incident.lng])
             .addTo(map)
-            .bindPopup(`<b>${incident.title}</b>`);
+            .bindPopup(`<b>${incident.title}</b><br>${incident.location}`);
 
           markers.push(marker);
         }
