@@ -7,7 +7,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ================= AUTO REDIRECT ================= */
   if (user && (window.location.pathname.includes("login") || window.location.pathname.includes("register"))) {
-    window.location.href = "/dashboard.html";
+    window.location.href =
+      user.role === "admin"
+        ? "/admin.html"
+        : "/dashboard.html";
   }
 
   /* ================= LOGIN ================= */
@@ -22,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const formData = new FormData(loginForm);
       const payload = {
-        email: formData.get("email"),
+        email: formData.get("email")?.trim(),
         password: formData.get("password"),
       };
 
@@ -33,8 +36,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         window.API.setAuth(data.token, data.user);
+        renderNav();
 
-        /* 🔥 BETTER UX */
+        /* UX */
         if (data.user.role === "user" && !data.user.isApproved) {
           window.APP.showToast("Account pending admin approval", "info");
         } else {
@@ -49,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 400);
 
       } catch (error) {
-        if (error.message.includes("Invalid")) {
+        if (error.message.toLowerCase().includes("invalid")) {
           window.APP.showToast("Invalid email or password", "error");
         } else {
           window.APP.showToast(error.message, "error");
@@ -93,8 +97,8 @@ document.addEventListener("DOMContentLoaded", () => {
           body: payload,
         });
 
-        // Clear any existing auth info to prevent redirect loop
-        window.API.clearAuth && window.API.clearAuth();
+        window.API.clearAuth();
+        renderNav();
 
         window.APP.showToast("Registered! Waiting for admin approval.", "success");
 
@@ -105,14 +109,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 800);
 
       } catch (error) {
-
-        /* 🔥 HANDLE 409 ERROR */
         if (error.message.toLowerCase().includes("exists")) {
           window.APP.showToast("Email already registered. Please login.", "error");
         } else {
           window.APP.showToast(error.message, "error");
         }
-
       } finally {
         btn.disabled = false;
         btn.textContent = "Create Account";
@@ -125,6 +126,8 @@ document.addEventListener("DOMContentLoaded", () => {
     toggle.addEventListener("click", () => {
       const input = toggle.previousElementSibling;
       const icon = toggle.querySelector("i");
+
+      if (!input) return;
 
       if (input.type === "password") {
         input.type = "text";

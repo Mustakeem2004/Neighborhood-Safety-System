@@ -4,7 +4,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>Register | Neighborhood Safety</title>
+
+    <!-- SEO -->
+    <meta name="description" content="Create an account to report incidents and improve neighborhood safety." />
 
     <!-- CSS -->
     <link rel="stylesheet" href="/css/styles.css" />
@@ -18,7 +22,10 @@
 
     <!-- NAVBAR -->
     <header class="topbar">
-        <div class="brand">Neighborhood Safety</div>
+        <div class="brand">
+            <i class="fa-solid fa-shield-halved"></i>
+            Neighborhood Safety
+        </div>
         <nav id="topNav" class="nav-links"></nav>
     </header>
 
@@ -31,28 +38,29 @@
                 Your account will be reviewed by an administrator.
             </p>
 
-            <form id="registerForm" class="auth-form">
+            <form id="registerForm" class="auth-form" autocomplete="off">
 
                 <div class="form-grid">
 
                     <!-- NAME -->
                     <div class="form-field">
-                        <label>Full Name</label>
-                        <input type="text" name="name" placeholder="Enter your name" required />
+                        <label for="name">Full Name</label>
+                        <input id="name" type="text" name="name" placeholder="Enter your name" required />
                     </div>
 
                     <!-- EMAIL -->
                     <div class="form-field">
-                        <label>Email</label>
-                        <input type="email" name="email" placeholder="Enter your email" required />
+                        <label for="email">Email</label>
+                        <input id="email" type="email" name="email" placeholder="Enter your email" required />
                     </div>
 
                     <!-- PASSWORD -->
                     <div class="form-field password-field">
-                        <label>Password</label>
+                        <label for="password">Password</label>
                         <div class="password-wrapper">
-                            <input type="password" name="password" minlength="6" placeholder="Create password" required />
-                            <span class="toggle-password">
+                            <input id="password" type="password" name="password" minlength="6"
+                                placeholder="Create password" required />
+                            <span class="toggle-password" aria-label="Toggle password visibility">
                                 <i class="fa-solid fa-eye"></i>
                             </span>
                         </div>
@@ -60,8 +68,8 @@
 
                     <!-- ADDRESS -->
                     <div class="form-field">
-                        <label>Address</label>
-                        <input type="text" name="address" placeholder="Enter your address" required />
+                        <label for="address">Address</label>
+                        <input id="address" type="text" name="address" placeholder="Enter your address" required />
                     </div>
 
                 </div>
@@ -78,6 +86,7 @@
                 </p>
 
             </form>
+
         </section>
     </main>
 
@@ -90,10 +99,6 @@
     <script src="/js/api.js"></script>
     <script src="/js/common.js"></script>
     <script src="/js/auth.js"></script>
-
-    <script>
-        document.getElementById("year").textContent = new Date().getFullYear();
-    </script>
 
 </body>
 

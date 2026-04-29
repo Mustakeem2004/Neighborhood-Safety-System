@@ -1,3 +1,4 @@
+/* ================= BASE URL ================= */
 const API_BASE =
   window.location.hostname === "localhost"
     ? "/api"
@@ -19,7 +20,8 @@ const clearAuth = () => {
 const getUser = () => {
   try {
     return JSON.parse(localStorage.getItem("user") || "null");
-  } catch {
+  } catch (err) {
+    console.warn("Invalid user data in storage");
     return null;
   }
 };
@@ -40,15 +42,21 @@ const apiRequest = async (path, options = {}) => {
     signal: controller.signal,
   };
 
-  /* AUTH HEADER */
+  /* ================= AUTH HEADER ================= */
   if (options.auth) {
     const token = getToken();
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      clearTimeout(timeout);
+      clearAuth();
+      window.location.href = "/login.html";
+      throw new Error("No token found. Please login again.");
     }
   }
 
-  /* BODY */
+  /* ================= BODY ================= */
   if (options.body) {
     config.body = isFormData
       ? options.body
@@ -60,19 +68,21 @@ const apiRequest = async (path, options = {}) => {
     clearTimeout(timeout);
 
     let payload;
+
     try {
       payload = await response.json();
     } catch {
       payload = { message: "Invalid server response" };
     }
 
-    /* 🔥 HANDLE UNAUTHORIZED */
+    /* ================= HANDLE UNAUTHORIZED ================= */
     if (response.status === 401) {
       clearAuth();
       window.location.href = "/login.html";
       throw new Error("Session expired. Please login again.");
     }
 
+    /* ================= HANDLE OTHER ERRORS ================= */
     if (!response.ok) {
       throw new Error(payload.message || "Request failed");
     }
@@ -80,8 +90,15 @@ const apiRequest = async (path, options = {}) => {
     return payload;
 
   } catch (error) {
+    clearTimeout(timeout);
+
     if (error.name === "AbortError") {
-      throw new Error("Request timeout. Try again.");
+      throw new Error("Request timeout. Please try again.");
+    }
+
+    // Network error
+    if (!navigator.onLine) {
+      throw new Error("No internet connection.");
     }
 
     throw error;

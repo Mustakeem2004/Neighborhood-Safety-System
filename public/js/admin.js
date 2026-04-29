@@ -1,5 +1,6 @@
 let statusChartInstance;
 let typeChartInstance;
+
 document.addEventListener("DOMContentLoaded", () => {
   window.APP.redirectIfNoAuth();
   window.APP.redirectIfNotAdmin();
@@ -7,9 +8,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const userTableBody = document.getElementById("userTableBody");
   const incidentTableBody = document.getElementById("incidentTableBody");
 
-  /* ================= LOADING HELPERS ================= */
+  /* ================= LOADING ================= */
   const setLoading = (el, text = "Loading...") => {
-    if (el) el.innerHTML = `<tr><td colspan="6" class="muted">${text}</td></tr>`;
+    if (el) {
+      el.innerHTML = `<tr><td colspan="6" class="muted">${text}</td></tr>`;
+    }
   };
 
   /* ================= LOAD USERS ================= */
@@ -25,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      users.forEach((user) => {
+      users.forEach(user => {
         const row = document.createElement("tr");
 
         row.innerHTML = `
@@ -69,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      incidents.forEach((incident) => {
+      incidents.forEach(incident => {
         const row = document.createElement("tr");
 
         row.innerHTML = `
@@ -100,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   /* ================= USER ACTION ================= */
-  userTableBody.addEventListener("click", async (event) => {
+  userTableBody?.addEventListener("click", async (event) => {
     const target = event.target;
 
     if (!(target instanceof HTMLButtonElement)) return;
@@ -133,15 +136,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* ================= STATUS CHANGE ================= */
-  incidentTableBody.addEventListener("change", async (event) => {
+  incidentTableBody?.addEventListener("change", async (event) => {
     const target = event.target;
 
     if (!(target instanceof HTMLSelectElement) || target.dataset.action !== "status") return;
 
-    const incidentId = target.dataset.id;
-
     try {
-      await window.API.apiRequest(`/incidents/${incidentId}/status`, {
+      await window.API.apiRequest(`/incidents/${target.dataset.id}/status`, {
         method: "PUT",
         auth: true,
         body: { status: target.value },
@@ -153,68 +154,13 @@ document.addEventListener("DOMContentLoaded", () => {
       window.APP.showToast(error.message, "error");
     }
   });
-  
-
-const loadAnalytics = async () => {
-  try {
-    const data = await window.API.apiRequest("/analytics", { auth: true });
-
-    /* TOTAL */
-    document.getElementById("totalIncidents").textContent = data.total;
-
-    /* STATUS CHART */
-    const statusCtx = document.getElementById("statusChart");
-
-    if (statusChartInstance) statusChartInstance.destroy();
-
-    statusChartInstance = new Chart(statusCtx, {
-      type: "doughnut",
-      data: {
-        labels: ["Pending", "Verified", "Resolved"],
-        datasets: [{
-          data: [
-            data.status.pending,
-            data.status.verified,
-            data.status.resolved
-          ],
-        }]
-      }
-    });
-
-    /* TYPE CHART */
-    const typeCtx = document.getElementById("typeChart");
-
-    if (typeChartInstance) typeChartInstance.destroy();
-
-    typeChartInstance = new Chart(typeCtx, {
-      type: "bar",
-      data: {
-        labels: data.byType.map(i => i._id),
-        datasets: [{
-          label: "Incidents",
-          data: data.byType.map(i => i.count),
-        }]
-      }
-    });
-
-  } catch (err) {
-    console.error(err);
-    window.APP.showToast("Failed to load analytics", "error");
-  }
-};
-
-
-
 
   /* ================= DELETE INCIDENT ================= */
-  incidentTableBody.addEventListener("click", async (event) => {
+  incidentTableBody?.addEventListener("click", async (event) => {
     const target = event.target;
 
     if (!(target instanceof HTMLButtonElement) || target.dataset.action !== "delete") return;
 
-    const incidentId = target.dataset.id;
-
-    /* 🔥 CONFIRMATION */
     const confirmDelete = confirm("Are you sure you want to delete this incident?");
     if (!confirmDelete) return;
 
@@ -222,13 +168,12 @@ const loadAnalytics = async () => {
     target.textContent = "Deleting...";
 
     try {
-      await window.API.apiRequest(`/incidents/${incidentId}`, {
+      await window.API.apiRequest(`/incidents/${target.dataset.id}`, {
         method: "DELETE",
         auth: true,
       });
 
       window.APP.showToast("Incident deleted", "success");
-
       await loadIncidents();
 
     } catch (error) {
@@ -236,10 +181,52 @@ const loadAnalytics = async () => {
     }
   });
 
+  // /* ================= ANALYTICS ================= */
+  // const loadAnalytics = async () => {
+  //   try {
+  //     const data = await window.API.apiRequest("/analytics", { auth: true });
 
+  //     document.getElementById("totalIncidents").textContent = data.total;
+
+  //     const statusCtx = document.getElementById("statusChart");
+  //     if (statusChartInstance) statusChartInstance.destroy();
+
+  //     statusChartInstance = new Chart(statusCtx, {
+  //       type: "doughnut",
+  //       data: {
+  //         labels: ["Pending", "Verified", "Resolved"],
+  //         datasets: [{
+  //           data: [
+  //             data.status.pending,
+  //             data.status.verified,
+  //             data.status.resolved
+  //           ],
+  //         }]
+  //       }
+  //     });
+
+  //     const typeCtx = document.getElementById("typeChart");
+  //     if (typeChartInstance) typeChartInstance.destroy();
+
+  //     typeChartInstance = new Chart(typeCtx, {
+  //       type: "bar",
+  //       data: {
+  //         labels: data.byType.map(i => i._id),
+  //         datasets: [{
+  //           label: "Incidents",
+  //           data: data.byType.map(i => i.count),
+  //         }]
+  //       }
+  //     });
+
+  //   } catch (err) {
+  //     console.error(err);
+  //     window.APP.showToast("Failed to load analytics", "error");
+  //   }
+  // };
 
   /* ================= INIT ================= */
   loadUsers();
   loadIncidents();
-  loadAnalytics();
+  // loadAnalytics(); // ✅ FIXED (removed duplicate)
 });

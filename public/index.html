@@ -2,61 +2,84 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Neighborhood Safety & Incident Reporting</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <title>Home | Neighborhood Safety</title>
 
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/styles.css" />
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="/css/styles.css" />
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-<header class="topbar">
-    <div class="brand">
-        <i class="fa-solid fa-shield-halved"></i>
-        Neighborhood Safety
-    </div>
+  <!-- NAVBAR -->
+  <header class="topbar">
+    <div class="brand">Neighborhood Safety</div>
+    <nav id="topNav" class="nav-links"></nav>
+  </header>
 
-    <nav class="nav-links" id="topNav"></nav>
-</header>
-
-<main class="container">
+  <!-- MAIN -->
+  <main class="container">
 
     <!-- HERO -->
-    <section class="hero">
-        <h1>Safer Communities Start With You</h1>
-        <p>
-            Report incidents instantly, track updates in real-time, and help
-            authorities take faster action in your neighborhood.
-        </p>
+    <section class="hero" style="text-align:center; margin-top:50px;">
+      <h1 style="font-size:40px; margin-bottom:15px;">
+        Safer Communities Start With You
+      </h1>
 
-        <div class="cta-btns">
-            <a class="btn primary-btn" href="/register.html">
-                Create Account
-            </a>
+      <p style="color:#666; max-width:600px; margin:auto;">
+        Report incidents instantly, track updates in real-time, and help
+        authorities take faster action in your neighborhood.
+      </p>
 
-            <a class="btn secondary-btn" href="/login.html">
-                Login
-            </a>
-        </div>
+      <!-- BUTTONS -->
+      <div id="ctaButtons" style="margin-top:30px;"></div>
     </section>
 
-</main>
+  </main>
 
-<footer>
-    <small>&copy; <span id="year"></span> Neighborhood Safety System</small>
-</footer>
+  <!-- FOOTER -->
+  <footer>
+    <small>&copy; <span id="year"></span> Neighborhood Safety</small>
+  </footer>
 
-<!-- SCRIPTS -->
-<script src="/js/api.js"></script>
-<script src="/js/common.js"></script>
+  <!-- JS -->
+  <script src="/js/api.js"></script>
+  <script src="/js/common.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+      const user = window.API.getUser();
+      const cta = document.getElementById("ctaButtons");
+
+      document.getElementById("year").textContent = new Date().getFullYear();
+
+      if (!user) {
+        // Not logged in
+        cta.innerHTML = `
+          <a href="/register.html" style="padding:12px 20px; margin:5px; border-radius:8px; background:#1a7f64; color:white; text-decoration:none;">Create Account</a>
+          <a href="/login.html" style="padding:12px 20px; margin:5px; border-radius:8px; border:1px solid #ccc; text-decoration:none;">Login</a>
+        `;
+      } else {
+        // Logged in
+        cta.innerHTML = `
+          <a href="/dashboard.html" style="padding:12px 20px; margin:5px; border-radius:8px; background:#1a7f64; color:white; text-decoration:none;">Go to Dashboard</a>
+          ${
+            user.role === "admin"
+              ? `<a href="/admin.html" style="padding:12px 20px; margin:5px; border-radius:8px; border:1px solid #ccc; text-decoration:none;">Admin Panel</a>`
+              : ""
+          }
+        `;
+      }
+
+    });
+  </script>
 
 </body>
+
 </html>

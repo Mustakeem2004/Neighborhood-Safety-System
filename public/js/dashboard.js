@@ -1,144 +1,132 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+  /* ================= AUTH ================= */
   window.APP.redirectIfNoAuth();
 
-  const welcomeText = document.getElementById("welcomeText");
+  const user = window.API.getUser();
+
+  /* ================= UI ================= */
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  if (user) {
+    document.getElementById("welcomeText").textContent =
+      `Welcome, ${user.name}. Stay updated with your community safety reports.`;
+  }
+
   const incidentList = document.getElementById("incidentList");
-  const filterForm = document.getElementById("filterForm");
-  const clearFiltersBtn = document.getElementById("clearFiltersBtn");
   const loadingText = document.getElementById("loadingText");
 
-  /* ================= USER ================= */
-  const user = window.API.getUser();
-  if (user) {
-    welcomeText.textContent = `Welcome, ${user.name}. Stay updated with your community safety reports.`;
-  }
-
   /* ================= MAP ================= */
-  let map;
+  let map = L.map("map").setView([28.6139, 77.2090], 10);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "&copy; OpenStreetMap contributors"
+  }).addTo(map);
+
   let markers = [];
 
-  const mapDiv = document.getElementById("map");
+  /* ================= ANALYTICS ================= */
+  let statusChartInstance;
+  let typeChartInstance;
 
-  if (mapDiv) {
-    map = L.map("map").setView([28.6139, 77.2090], 10);
+  const loadAnalytics = async () => {
+    try {
+      const data = await window.API.apiRequest("/analytics", { auth: true });
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
-  }
+      document.getElementById("totalIncidents").textContent = data.total;
 
-  /* ================= RENDER INCIDENT ================= */
-  const renderIncident = (incident) => {
-    const wrapper = document.createElement("article");
-    wrapper.className = "modern-card";
+      /* STATUS CHART */
+      const statusCtx = document.getElementById("statusChart");
 
-    wrapper.innerHTML = `
-      <h3>${incident.title}</h3>
+      if (statusChartInstance) statusChartInstance.destroy();
 
-      <div class="incident-meta">
-        <span class="badge">${incident.type}</span>
-        <span class="badge status-${incident.status}">${incident.status}</span>
-        <span class="badge">${incident.location}</span>
-      </div>
+      statusChartInstance = new Chart(statusCtx, {
+        type: "doughnut",
+        data: {
+          labels: ["Pending", "Verified", "Resolved"],
+          datasets: [{
+            data: [
+              data.status.pending,
+              data.status.verified,
+              data.status.resolved
+            ]
+          }]
+        }
+      });
 
-      <p>${incident.description}</p>
+      /* TYPE CHART */
+      const typeCtx = document.getElementById("typeChart");
 
-      <p class="muted">
-        Reported by: ${incident.reportedBy?.name || "Unknown"} |
-        ${new Date(incident.createdAt).toLocaleString()}
-      </p>
+      if (typeChartInstance) typeChartInstance.destroy();
 
-      ${
-        incident.image
-          ? `<p><a href="${incident.image}" target="_blank">View Image</a></p>`
-          : ""
-      }
-    `;
+      typeChartInstance = new Chart(typeCtx, {
+        type: "bar",
+        data: {
+          labels: data.byType.map(i => i._id),
+          datasets: [{
+            label: "Incidents",
+            data: data.byType.map(i => i.count)
+          }]
+        }
+      });
 
-    return wrapper;
+    } catch (err) {
+      window.APP.showToast("Failed to load analytics", "error");
+    }
   };
 
   /* ================= LOAD INCIDENTS ================= */
   const loadIncidents = async () => {
     try {
-      if (loadingText) loadingText.style.display = "block";
+      loadingText.style.display = "block";
       incidentList.innerHTML = "";
 
-      const formData = new FormData(filterForm);
-      const params = new URLSearchParams();
+      const data = await window.API.apiRequest("/incidents", { auth: true });
 
-      ["type", "status", "location", "search"].forEach((key) => {
-        const value = (formData.get(key) || "").toString().trim();
-        if (value) params.append(key, value);
-      });
+      loadingText.style.display = "none";
 
-      const query = params.toString() ? `?${params.toString()}` : "";
-      const incidents = await window.API.apiRequest(`/incidents${query}`);
+      /* STATS */
+      document.getElementById("totalCount").textContent = data.length;
+      document.getElementById("pendingCount").textContent =
+        data.filter(i => i.status === "Pending").length;
+      document.getElementById("verifiedCount").textContent =
+        data.filter(i => i.status === "Verified").length;
+      document.getElementById("resolvedCount").textContent =
+        data.filter(i => i.status === "Resolved").length;
 
-      if (loadingText) loadingText.style.display = "none";
-
-      /* ================= STATS ================= */
-      const total = incidents.length;
-      const pending = incidents.filter(i => i.status === "Pending").length;
-      const verified = incidents.filter(i => i.status === "Verified").length;
-      const resolved = incidents.filter(i => i.status === "Resolved").length;
-
-      const setText = (id, value) => {
-        const el = document.getElementById(id);
-        if (el) el.textContent = value;
-      };
-
-      setText("totalCount", total);
-      setText("pendingCount", pending);
-      setText("verifiedCount", verified);
-      setText("resolvedCount", resolved);
-
-      /* ================= EMPTY STATE ================= */
-      if (!incidents.length) {
-        incidentList.innerHTML = `
-          <div class="modern-card">
-            <p class="muted">🚫 No incidents found</p>
-          </div>
-        `;
-        return;
-      }
-
-      /* ================= CLEAR MAP ================= */
-      markers.forEach(m => map?.removeLayer(m));
+      /* CLEAR MAP */
+      markers.forEach(marker => map.removeLayer(marker));
       markers = [];
 
-      /* ================= RENDER ================= */
-      incidents.forEach((incident) => {
-        incidentList.appendChild(renderIncident(incident));
+      /* RENDER */
+      data.forEach(incident => {
+        const div = document.createElement("div");
+        div.className = "modern-card";
 
-        /* MAP MARKER (TEMP RANDOM LOCATION) */
-        if (map) {
-          const lat = 28.6 + Math.random() * 0.1;
-          const lng = 77.2 + Math.random() * 0.1;
+        div.innerHTML = `
+          <h3>${incident.title}</h3>
+          <p>${incident.description}</p>
+        `;
 
-          const marker = L.marker([lat, lng])
+        incidentList.appendChild(div);
+
+        if (incident.lat && incident.lng) {
+          const marker = L.marker([incident.lat, incident.lng])
             .addTo(map)
-            .bindPopup(`<b>${incident.title}</b><br>${incident.location}`);
+            .bindPopup(`<b>${incident.title}</b>`);
 
           markers.push(marker);
         }
       });
 
     } catch (error) {
-      if (loadingText) loadingText.style.display = "none";
+      loadingText.style.display = "none";
       window.APP.showToast(error.message, "error");
     }
   };
 
-  /* ================= EVENTS ================= */
-  filterForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    loadIncidents();
-  });
-
-  clearFiltersBtn.addEventListener("click", () => {
-    filterForm.reset();
-    loadIncidents();
-  });
-
   /* ================= INIT ================= */
   loadIncidents();
+  loadAnalytics();
+
 });
