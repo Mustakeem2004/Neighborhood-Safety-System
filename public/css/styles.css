@@ -349,3 +349,85 @@ footer {
   margin-top: 30px;
   color: var(--muted);
 }
+
+
+/* ================= ABOUT PAGE FIX ================= */
+
+/* container spacing */
+.container section {
+  margin-bottom: 30px;
+}
+
+/* HERO */
+.hero {
+  background: linear-gradient(135deg, #0d7c66, #4ecdc4);
+  color: white;
+  padding: 60px 30px;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.hero p {
+  max-width: 600px;
+  margin: auto;
+  opacity: 0.9;
+}
+
+/* MODERN CARD */
+.modern-card {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+}
+
+/* hover effect */
+.modern-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+}
+
+/* headings */
+.modern-card h2 {
+  margin-bottom: 10px;
+  font-size: 22px;
+}
+
+/* text */
+.modern-card p {
+  line-height: 1.6;
+}
+
+/* FEATURE GRID */
+.cards-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+}
+
+/* LIST FIX (VERY IMPORTANT) */
+.modern-card ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 15px;
+  text-align: left;
+}
+
+.modern-card ul li {
+  padding: 8px 0;
+  font-size: 15px;
+}
+
+/* optional icons alignment */
+.modern-card h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
