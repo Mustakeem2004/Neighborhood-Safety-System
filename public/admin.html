@@ -4,85 +4,204 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Panel | Neighborhood Safety</title>
+    <title>Dashboard | Neighborhood Safety</title>
+
     <link rel="stylesheet" href="/css/styles.css" />
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 
 <body>
-    <header class="topbar">
-        <div class="brand">Neighborhood Safety</div>
-        <nav id="topNav" class="nav-links"></nav>
-    </header>
 
-    <main class="container">
-        <section class="card">
-            <h1>Admin Control Center</h1>
-            <p class="muted">Approve users and verify, resolve, or remove reports.</p>
-        </section>
+<header class="topbar">
+    <div class="brand">Neighborhood Safety</div>
+    <nav id="topNav" class="nav-links"></nav>
+</header>
 
-        <section class="card" style="margin-top:20px">
-  <h2>📊 Analytics Dashboard</h2>
+<main class="container">
 
-  <div class="cards-row">
-    <div class="modern-card">
-      <h3>Total Incidents</h3>
-      <p id="totalIncidents">0</p>
-    </div>
-  </div>
+    <!-- HERO -->
+    <section class="card">
+        <h1>Incident Dashboard</h1>
+        <p id="welcomeText" class="muted"></p>
+    </section>
 
-  <div style="display:flex; gap:20px; flex-wrap:wrap; margin-top:20px">
-    <canvas id="statusChart" style="max-width:400px;"></canvas>
-    <canvas id="typeChart" style="max-width:400px;"></canvas>
-  </div>
-</section>
+    <!-- STATS -->
+    <section class="cards-row">
+        <div class="modern-card"><h3>Total</h3><p id="totalCount">0</p></div>
+        <div class="modern-card"><h3>Pending</h3><p id="pendingCount">0</p></div>
+        <div class="modern-card"><h3>Verified</h3><p id="verifiedCount">0</p></div>
+        <div class="modern-card"><h3>Resolved</h3><p id="resolvedCount">0</p></div>
+    </section>
 
-        <section class="card" style="margin-top: 14px">
-            <h2>Users</h2>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Address</th>
-                            <th>Role</th>
-                            <th>Approved</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="userTableBody"></tbody>
-                </table>
-            </div>
-        </section>
+    <!-- MAP -->
+    <section class="card">
+        <h2>📍 Incident Map</h2>
+        <div id="map" style="height:350px;"></div>
+    </section>
 
-        <section class="card" style="margin-top: 14px">
-            <h2>Incidents</h2>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Type</th>
-                            <th>Status</th>
-                            <th>Location</th>
-                            <th>Reported By</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="incidentTableBody"></tbody>
-                </table>
-            </div>
-        </section>
-    </main>
+    <!-- FILTER -->
+    <section class="card">
+        <h2>Search & Filters</h2>
+        <form id="filterForm" class="row two">
 
-    <footer>
-        <small>Neighborhood Safety System <span id="year"></span></small>
-    </footer>
+            <label>
+                Type
+                <select name="type">
+                    <option value="">All</option>
+                    <option value="Crime">Crime</option>
+                    <option value="Accident">Accident</option>
+                    <option value="Emergency">Emergency</option>
+                </select>
+            </label>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <label>
+                Status
+                <select name="status">
+                    <option value="">All</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Verified">Verified</option>
+                    <option value="Resolved">Resolved</option>
+                </select>
+            </label>
+
+            <label>
+                Location
+                <input type="text" name="location" />
+            </label>
+
+            <label>
+                Keyword
+                <input type="text" name="search" />
+            </label>
+
+            <button class="btn gradient" type="submit">Apply</button>
+            <button class="btn outline" type="button" id="clearFiltersBtn">Clear</button>
+        </form>
+    </section>
+
+    <!-- INCIDENT LIST -->
+    <section class="card">
+        <h2>Incidents</h2>
+
+        <div id="loadingText" class="muted">Loading...</div>
+        <div id="incidentList" class="list"></div>
+    </section>
+
+</main>
+
+<footer>
+    <small>&copy; <span id="year"></span></small>
+</footer>
+
+<!-- JS -->
 <script src="/js/api.js"></script>
 <script src="/js/common.js"></script>
-<script src="/js/admin.js"></script>
-</body>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    window.APP.redirectIfNoAuth();
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const user = window.API.getUser();
+    if (user) {
+        document.getElementById("welcomeText").textContent = `Welcome, ${user.name}`;
+    }
+
+    const incidentList = document.getElementById("incidentList");
+    const loadingText = document.getElementById("loadingText");
+    const filterForm = document.getElementById("filterForm");
+    const clearBtn = document.getElementById("clearFiltersBtn");
+
+    /* MAP INIT */
+    const map = L.map('map').setView([28.6139, 77.2090], 10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    let markers = [];
+
+    const renderIncident = (i) => {
+        const el = document.createElement("div");
+        el.className = "modern-card";
+        el.innerHTML = `
+            <h3>${i.title}</h3>
+            <p>${i.description}</p>
+            <p class="muted">${i.location}</p>
+            <span class="badge status-${i.status}">${i.status}</span>
+        `;
+        return el;
+    };
+
+    const loadIncidents = async () => {
+        try {
+            loadingText.style.display = "block";
+            incidentList.innerHTML = "";
+
+            const params = new URLSearchParams(new FormData(filterForm));
+            const data = await window.API.apiRequest("/incidents?" + params);
+
+            loadingText.style.display = "none";
+
+            /* STATS */
+            document.getElementById("totalCount").textContent = data.length;
+            document.getElementById("pendingCount").textContent = data.filter(x => x.status==="Pending").length;
+            document.getElementById("verifiedCount").textContent = data.filter(x => x.status==="Verified").length;
+            document.getElementById("resolvedCount").textContent = data.filter(x => x.status==="Resolved").length;
+
+            /* CLEAR MAP */
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+
+            if (!data.length) {
+                incidentList.innerHTML = "<p class='muted'>No incidents found</p>";
+                return;
+            }
+
+            data.forEach(i => {
+                incidentList.appendChild(renderIncident(i));
+
+                /* ✅ USE REAL COORDINATES */
+                if (i.lat && i.lng) {
+                    const marker = L.marker([i.lat, i.lng])
+                        .addTo(map)
+                        .bindPopup(`
+                            <b>${i.title}</b><br/>
+                            ${i.location}<br/>
+                            Status: ${i.status}
+                        `);
+
+                    markers.push(marker);
+                }
+            });
+
+            /* ✅ AUTO ZOOM */
+            if (markers.length) {
+                const group = L.featureGroup(markers);
+                map.fitBounds(group.getBounds());
+            }
+
+        } catch (err) {
+            loadingText.style.display = "none";
+            window.APP.showToast(err.message, "error");
+        }
+    };
+
+    filterForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        loadIncidents();
+    });
+
+    clearBtn.addEventListener("click", () => {
+        filterForm.reset();
+        loadIncidents();
+    });
+
+    loadIncidents();
+});
+</script>
+
+</body>
 </html>
