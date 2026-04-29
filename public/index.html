@@ -5,90 +5,99 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Neighborhood Safety & Incident Reporting</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Poppins:wght@400;600;700;900&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- CSS -->
     <link rel="stylesheet" href="/css/styles.css" />
 </head>
 
 <body>
+
+    <!-- ================= NAVBAR ================= -->
     <header class="topbar">
-        <div class="brand"><i class="fa-solid fa-shield-halved" style="color:#0d7c66;margin-right:8px;"></i>Neighborhood
-            Safety</div>
-        <nav class="nav-links">
-            <a href="/index.html" class="active">Home</a>
+        <div class="brand">
+            <i class="fa-solid fa-shield-halved" style="color:#0d7c66;margin-right:8px;"></i>
+            Neighborhood Safety
+        </div>
+
+        <nav class="nav-links" id="navLinks">
+            <a href="/index.html">Home</a>
             <a href="/about.html">About</a>
             <a href="/contact.html">Contact</a>
-            <a href="/queries.html">Queries</a>
-            <a href="/mail.html">Mail</a>
-            <a href="/suggestion.html">Suggestion</a>
-            <a href="/description.html">Description</a>
-            <a href="/report.html">Report</a>
             <a href="/dashboard.html">Dashboard</a>
-            <a href="/admin.html">Admin</a>
-            <button class="btn logout-btn">Logout</button>
+
+            <!-- Dynamic buttons will be added here -->
         </nav>
     </header>
 
+    <!-- ================= MAIN ================= -->
     <main class="container">
-        <section class="hero fade-in">
+        <section class="hero">
             <h1>Neighborhood Safety & Incident Reporting System</h1>
             <p>
-                Report local incidents quickly, track progress, and help authorities and
-                community administrators respond faster.
+                Report local incidents quickly and help authorities respond faster.
             </p>
+
             <div class="cta-btns">
                 <a class="btn gradient" href="/register.html">Create Account</a>
                 <a class="btn outline" href="/login.html">Resident Login</a>
             </div>
         </section>
-
-        <section class="cards-row">
-            <article class="modern-card resident-card">
-                <div class="icon-wrap"><i class="fa-solid fa-user-shield"></i></div>
-                <h2>For Residents</h2>
-                <p class="muted">
-                    Submit incident reports with details and location, and monitor status
-                    updates from Pending to Verified to Resolved.
-                </p>
-            </article>
-            <article class="modern-card admin-card">
-                <div class="icon-wrap"><i class="fa-solid fa-user-tie"></i></div>
-                <h2>For Admins</h2>
-                <p class="muted">
-                    Approve residents, verify incoming reports, update statuses, and remove
-                    fake incidents from a centralized panel.
-                </p>
-            </article>
-        </section>
     </main>
 
+    <!-- ================= FOOTER ================= -->
     <footer>
-        <small>&copy; <span id="year"></span> Neighborhood Safety System. All rights reserved.</small>
+        <small>&copy; <span id="year"></span> Neighborhood Safety System</small>
     </footer>
 
-    <script src="/js/api.js"></script>
-    <script src="/js/common.js"></script>
+    <!-- ================= SCRIPT ================= -->
     <script>
-        // Set year in footer
+
+        // Set year
         document.getElementById("year").textContent = new Date().getFullYear();
-        // Navbar active link
-        const navLinks = document.querySelectorAll('.nav-links a');
-        navLinks.forEach(link => {
-            if (window.location.pathname.endsWith(link.getAttribute('href'))) {
-                link.classList.add('active');
+
+        const nav = document.getElementById("navLinks");
+
+        // Check login status
+        const token = localStorage.getItem("token");
+
+        if (token) {
+            // USER LOGGED IN → SHOW LOGOUT
+            nav.innerHTML += `
+                <button class="btn logout-btn">Logout</button>
+            `;
+        } else {
+            // USER NOT LOGGED IN → SHOW LOGIN + REGISTER
+            nav.innerHTML += `
+                <a href="/login.html">Login</a>
+                <a href="/register.html">Register</a>
+            `;
+        }
+
+        // Handle Logout
+        document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("logout-btn")) {
+                localStorage.removeItem("token");
+                alert("Logged out successfully!");
+                window.location.href = "/login.html";
             }
         });
-        // Logout button (demo only)
-        document.querySelector('.logout-btn').addEventListener('click', () => {
-            window.API?.clearAuth?.();
-            window.location.href = '/login.html';
+
+        // Highlight active link
+        const links = document.querySelectorAll(".nav-links a");
+        links.forEach(link => {
+            if (window.location.pathname.includes(link.getAttribute("href"))) {
+                link.classList.add("active");
+            }
         });
+
     </script>
+
 </body>
 
 </html>
