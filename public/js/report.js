@@ -19,10 +19,21 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      previewBox.innerHTML = `
-        <p class="muted">Preview:</p>
-        <img src="${url}" alt="Preview" />
-      `;
+previewBox.innerHTML = `
+  <p class="muted">Preview:</p>
+  <img src="${url}" alt="Preview"
+    style="
+      max-width:250px;
+      width:100%;
+      height:auto;
+      border-radius:12px;
+      margin-top:10px;
+      border:1px solid #ddd;
+      box-shadow:0 4px 10px rgba(0,0,0,0.1);
+      object-fit:cover;
+    "
+  />
+`;
     });
   }
 
