@@ -10,8 +10,7 @@
     <link rel="stylesheet" href="/css/styles.css" />
 
     <!-- ICONS -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 
 <body>
@@ -61,6 +60,11 @@
                     <a href="/register.html">Register</a>
                 </p>
 
+                <!-- FORCE LOGOUT BUTTON -->
+                <button type="button" id="forceLogoutBtn" class="btn outline full" style="margin-top:12px;">
+                    Force Logout (Fix Redirect Loop)
+                </button>
+
             </form>
         </section>
     </main>
@@ -77,6 +81,16 @@
 
     <script>
         document.getElementById("year").textContent = new Date().getFullYear();
+
+        // Force Logout Button Logic
+        document.getElementById("forceLogoutBtn").onclick = function () {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            if (window.APP && window.APP.showToast) {
+                window.APP.showToast('Auth info cleared. Please login again.', 'success');
+            }
+            setTimeout(() => window.location.reload(), 500);
+        };
     </script>
 
 </body>
