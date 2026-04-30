@@ -4,87 +4,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact | Neighborhood Safety</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <title>Contact | SAFE NET</title>
 
-    <!-- ICONS -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        :root{
+            --bg-0:#0b0b0d;--bg-1:#111115;--bg-2:#16161c;--bg-3:#1c1c24;
+            --line:rgba(255,255,255,.07);--line-strong:rgba(255,255,255,.14);
+            --text:#f2f2f4;--text-dim:#b7b7be;--text-mute:#7a7a83;
+            --red:#ff4a4a;--red-soft:#ff6b6b;--teal:#00c48c;--amber:#f7b733;
+            --radius-md:14px;--radius-lg:22px;--radius-pill:999px;
+            --shadow-1:0 1px 0 rgba(255,255,255,.03) inset,0 10px 30px rgba(0,0,0,.45);
+            --shadow-red:0 0 0 1px rgba(255,74,74,.35),0 12px 40px rgba(255,74,74,.22);
+        }
+        *,*::before,*::after{box-sizing:border-box}
+        html,body{margin:0;padding:0;background:var(--bg-0);color:var(--text);font-family:"Archivo",Arial,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh}
+        body{
+            position:relative;display:flex;flex-direction:column;
+            background:
+                radial-gradient(1100px 600px at 85% -10%,rgba(255,74,74,.12),transparent 60%),
+                radial-gradient(900px 500px at -10% 80%,rgba(0,196,140,.06),transparent 60%),
+                var(--bg-0);
+        }
+        body::before{
+            content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.3;
+            background-image:
+                linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+                linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+            background-size:64px 64px;
+            mask-image:radial-gradient(ellipse at center,#000 40%,transparent 75%);
+            -webkit-mask-image:radial-gradient(ellipse at center,#000 40%,transparent 75%);
+        }
+        a{color:inherit;text-decoration:none}
+        ::selection{background:var(--red);color:#fff}
+        @keyframes pulse{0%,100%{transform:translateY(-50%) scale(1);opacity:1}50%{transform:translateY(-50%) scale(1.15);opacity:.75}}
+        @keyframes pulse2{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:.75}}
+
+        /* TOPBAR */
+        .topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px 40px;background:rgba(11,11,13,.75);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+        .brand{display:inline-flex;align-items:center;gap:12px;font-family:"Anton",sans-serif;font-size:22px;letter-spacing:.08em;text-transform:uppercase;position:relative}
+        .brand::before{content:"";width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#1a1a22,#0e0e13);border:1px solid var(--line-strong);display:inline-block}
+        .brand::after{content:"";position:absolute;left:12px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:var(--red);box-shadow:0 0 0 3px rgba(255,74,74,.18),0 0 14px rgba(255,74,74,.55);animation:pulse 1.8s ease-in-out infinite}
+        .nav-links{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+        .nav-links a,.nav-links button,.nav-links span{display:inline-flex;align-items:center;padding:9px 16px;border-radius:var(--radius-pill);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);background:transparent;border:1px solid transparent;cursor:pointer;transition:color .2s,background-color .2s,transform .2s}
+        .nav-links a:hover,.nav-links button:hover{color:var(--text);background:rgba(255,255,255,.04)}
+        .nav-links a.active,.nav-links .active{background:var(--teal);color:#07110c}
+        .nav-links .logout,.nav-links a[href*="logout"]{background:var(--red);color:#fff}
+
+        /* CONTAINER */
+        .container{position:relative;z-index:1;flex:1;max-width:1320px;width:100%;margin:0 auto;padding:56px 40px 80px;display:flex;flex-direction:column;gap:48px}
+
+        /* HERO */
+        .hero{text-align:left}
+        .hero-pill{display:inline-flex;align-items:center;gap:10px;padding:7px 14px;margin-bottom:24px;border:1px solid rgba(255,74,74,.45);border-radius:var(--radius-pill);color:var(--red);background:rgba(255,74,74,.05);font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+        .hero-pill::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 3px rgba(255,74,74,.18);animation:pulse2 1.6s ease-in-out infinite}
+        .hero h1{font-family:"Anton",sans-serif;font-weight:400;font-size:clamp(64px,10vw,132px);line-height:.88;letter-spacing:-.01em;text-transform:uppercase;margin:0 0 22px;color:var(--text)}
+        .hero h1 .accent{color:var(--red)}
+        .hero p{max-width:620px;color:var(--text-dim);font-size:17px;line-height:1.6;margin:0}
+
+        /* CARDS ROW */
+        .cards-row{display:grid;grid-template-columns:1fr 1.4fr;gap:24px;align-items:stretch}
+
+        .card{position:relative;background:linear-gradient(180deg,var(--bg-2),var(--bg-1));border:1px solid var(--line);border-radius:var(--radius-lg);padding:36px;box-shadow:var(--shadow-1);overflow:hidden}
+        .card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,var(--red),transparent 70%)}
+
+        .kicker{display:inline-flex;align-items:center;gap:8px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-mute);margin-bottom:10px}
+        .kicker i{color:var(--red)}
+        .card h2{font-family:"Anton",sans-serif;font-weight:400;font-size:32px;letter-spacing:.04em;text-transform:uppercase;margin:0 0 24px;color:var(--text)}
+
+        /* INFO BLOCKS */
+        .info-list{display:flex;flex-direction:column;gap:16px}
+        .info-item{display:flex;align-items:flex-start;gap:16px;padding:18px;border-radius:var(--radius-md);background:var(--bg-3);border:1px solid var(--line);transition:transform .2s,border-color .2s}
+        .info-item:hover{transform:translateX(2px);border-color:var(--line-strong)}
+        .info-ico{flex-shrink:0;width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#1a1a22,#0e0e13);border:1px solid var(--line-strong);display:inline-flex;align-items:center;justify-content:center;color:var(--red);font-size:16px}
+        .info-body{flex:1;min-width:0}
+        .info-label{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-mute);margin-bottom:6px}
+        .info-value{font-family:"Anton",sans-serif;font-size:18px;letter-spacing:.04em;color:var(--text);word-break:break-word}
+        .info-value a{color:inherit;transition:color .2s}
+        .info-value a:hover{color:var(--red)}
+
+        /* SOCIALS */
+        .socials{display:flex;gap:10px;margin-top:24px;padding-top:24px;border-top:1px dashed var(--line)}
+        .soc{width:42px;height:42px;border-radius:12px;background:var(--bg-3);border:1px solid var(--line-strong);display:inline-flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:14px;transition:color .2s,border-color .2s,background-color .2s,transform .2s}
+        .soc:hover{color:#fff;background:var(--red);border-color:var(--red);transform:translateY(-2px)}
+
+        /* FORM */
+        .auth-form{display:flex;flex-direction:column;gap:20px}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+        .form-field{display:flex;flex-direction:column;gap:8px}
+        .form-field label{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-mute);font-weight:600}
+        .form-field input,.form-field textarea{width:100%;padding:14px 16px;background:var(--bg-3);color:var(--text);border:1px solid var(--line);border-radius:var(--radius-md);font-family:"Archivo",sans-serif;font-size:14.5px;transition:border-color .2s,background-color .2s,box-shadow .2s;outline:none}
+        .form-field input::placeholder,.form-field textarea::placeholder{color:var(--text-mute)}
+        .form-field input:hover,.form-field textarea:hover{border-color:var(--line-strong)}
+        .form-field input:focus,.form-field textarea:focus{border-color:var(--red);background:#1e1e26;box-shadow:0 0 0 4px rgba(255,74,74,.10)}
+        .form-field textarea{min-height:160px;resize:vertical}
+
+        /* BUTTON */
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:"Archivo",sans-serif;font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:16px 28px;border-radius:var(--radius-pill);border:1px solid transparent;background:var(--bg-3);color:var(--text);cursor:pointer;transition:transform .2s,background-color .2s,box-shadow .2s}
+        .btn.full{width:100%}
+        .btn.gradient{background:var(--red);color:#fff;box-shadow:var(--shadow-red);margin-top:4px}
+        .btn.gradient::before{content:"\f1d8";font-family:"Font Awesome 6 Free";font-weight:900;font-size:12px}
+        .btn.gradient:hover{background:var(--red-soft);transform:translateY(-2px);box-shadow:0 0 0 1px rgba(255,74,74,.5),0 18px 48px rgba(255,74,74,.32)}
+
+        /* toast */
+        #toast{position:fixed;top:24px;right:24px;z-index:100;padding:14px 18px;background:var(--bg-2);border:1px solid var(--line-strong);border-left:3px solid var(--teal);border-radius:var(--radius-md);color:var(--text);font-size:13.5px;box-shadow:0 10px 40px rgba(0,0,0,.5);opacity:0;transform:translateY(-10px);transition:opacity .25s,transform .25s;pointer-events:none;display:flex;align-items:center;gap:10px}
+        #toast.show{opacity:1;transform:translateY(0)}
+        #toast i{color:var(--teal)}
+        #toast.error{border-left-color:var(--red)}
+        #toast.error i{color:var(--red)}
+
+        /* FOOTER */
+        footer{position:relative;z-index:1;max-width:1320px;margin:0 auto;width:100%;padding:24px 40px 36px;border-top:1px solid var(--line);color:var(--text-mute);font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase}
+
+        /* RESPONSIVE */
+        @media (max-width:980px){
+            .cards-row{grid-template-columns:1fr;gap:20px}
+            .hero h1{font-size:72px}
+        }
+        @media (max-width:620px){
+            .topbar{padding:14px 20px}
+            .container{padding:36px 20px 60px;gap:32px}
+            .card{padding:26px 22px}
+            .card h2{font-size:26px}
+            .form-row{grid-template-columns:1fr}
+            footer{padding:20px}
+        }
+    </style>
 </head>
 
 <body>
 
     <!-- NAVBAR -->
     <header class="topbar">
-        <div class="brand">Neighborhood Safety</div>
+        <div class="brand">SAFE NET</div>
         <nav id="topNav" class="nav-links"></nav>
     </header>
+
+    <!-- TOAST -->
+    <div id="toast"><i class="fa-solid fa-circle-check"></i><span id="toastMsg"></span></div>
 
     <!-- MAIN -->
     <main class="container">
 
-        <!-- HEADER -->
+        <!-- HERO -->
         <section class="hero">
-            <h1>Contact Us</h1>
-            <p>We’re here to help. Reach out to us anytime.</p>
+            <span class="hero-pill">24/7 &middot; COMMAND LINE OPEN</span>
+            <h1>
+                GET IN<br>
+                <span class="accent">TOUCH.</span>
+            </h1>
+            <p>
+                Questions, tips, partnerships, or press &mdash; we read every message.
+                Drop us a note and the team will respond within one business day.
+            </p>
         </section>
 
-        <!-- CONTACT GRID -->
+        <!-- CARDS ROW -->
+        <section class="cards-row">
 
-<section class="cards-row" 
-  style="display:flex; gap:30px; flex-wrap:wrap; justify-content:center; margin-top:40px;">
+            <!-- CONTACT INFO -->
+            <div class="card">
+                <span class="kicker">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                    REACH US
+                </span>
+                <h2>Our Channels</h2>
 
-  <!-- CONTACT INFO -->
-  <div class="modern-card"
-    style="flex:1; min-width:300px; max-width:500px; padding:40px; border-radius:20px; background:#f8f9fb; box-shadow:0 10px 25px rgba(0,0,0,0.08);">
+                <div class="info-list">
+                    <div class="info-item">
+                        <span class="info-ico"><i class="fa-solid fa-location-dot"></i></span>
+                        <div class="info-body">
+                            <div class="info-label">Headquarters</div>
+                            <div class="info-value">Karimpur, West Bengal, India</div>
+                        </div>
+                    </div>
 
-    <h2 style="margin-bottom:10px;">📍 Our Office</h2>
-    <p style="color:#555; margin-bottom:25px;">Karimpur, West Bengal, India</p>
+                    <div class="info-item">
+                        <span class="info-ico"><i class="fa-solid fa-phone"></i></span>
+                        <div class="info-body">
+                            <div class="info-label">Phone / Hotline</div>
+                            <div class="info-value"><a href="tel:+919876543210">+91 98765 43210</a></div>
+                        </div>
+                    </div>
 
-    <h2 style="margin-bottom:10px;">📞 Phone</h2>
-    <p style="color:#555; margin-bottom:25px;">+91 98765 43210</p>
+                    <div class="info-item">
+                        <span class="info-ico"><i class="fa-solid fa-envelope"></i></span>
+                        <div class="info-body">
+                            <div class="info-label">Email</div>
+                            <div class="info-value"><a href="mailto:support@neighborhoodsafety.com">support@neighborhoodsafety.com</a></div>
+                        </div>
+                    </div>
 
-    <h2 style="margin-bottom:10px;">📧 Email</h2>
-    <p style="color:#555;">support@neighborhoodsafety.com</p>
-  </div>
+                    <div class="info-item">
+                        <span class="info-ico"><i class="fa-solid fa-clock"></i></span>
+                        <div class="info-body">
+                            <div class="info-label">Support Hours</div>
+                            <div class="info-value">Mon &ndash; Sat &middot; 09:00 &ndash; 21:00 IST</div>
+                        </div>
+                    </div>
+                </div>
 
-  <!-- CONTACT FORM -->
-  <div class="modern-card"
-    style="flex:1; min-width:300px; max-width:600px; padding:40px; border-radius:20px; background:#f8f9fb; box-shadow:0 10px 25px rgba(0,0,0,0.08);">
+                <div class="socials">
+                    <a href="#" class="soc" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="#" class="soc" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="soc" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="soc" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a href="#" class="soc" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+                </div>
+            </div>
 
-    <h2 style="text-align:center; margin-bottom:30px;">Send a Message</h2>
+            <!-- CONTACT FORM -->
+            <div class="card">
+                <span class="kicker">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    NEW MESSAGE
+                </span>
+                <h2>Send a Message</h2>
 
-    <form id="contactForm" style="display:flex; flex-direction:column; gap:20px;">
+                <form id="contactForm" class="auth-form">
 
-      <div style="display:flex; gap:15px; flex-wrap:wrap;">
-        <input type="text" name="name" placeholder="Name" required
-          style="flex:1; padding:12px; border-radius:12px; border:1px solid #ccc;" />
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="cName">Name</label>
+                            <input id="cName" type="text" name="name" placeholder="Your full name" required />
+                        </div>
+                        <div class="form-field">
+                            <label for="cEmail">Email</label>
+                            <input id="cEmail" type="email" name="email" placeholder="you@neighborhood.io" required />
+                        </div>
+                    </div>
 
-        <input type="email" name="email" placeholder="Email" required
-          style="flex:1; padding:12px; border-radius:12px; border:1px solid #ccc;" />
-      </div>
+                    <div class="form-field">
+                        <label for="cSubject">Subject</label>
+                        <input id="cSubject" type="text" name="subject" placeholder="What's this about?" />
+                    </div>
 
-      <textarea name="message" placeholder="Message" required
-        style="padding:12px; border-radius:12px; border:1px solid #ccc; height:120px;"></textarea>
+                    <div class="form-field">
+                        <label for="cMessage">Message</label>
+                        <textarea id="cMessage" name="message" placeholder="Share details, context, and anything we should know..." required></textarea>
+                    </div>
 
-      <button type="submit"
-        style="padding:14px; border:none; border-radius:30px; font-weight:600; color:white;
-               background:linear-gradient(90deg,#1a7f64,#4ecdc4);
-               cursor:pointer; font-size:16px;">
-        Send Message
-      </button>
+                    <button type="submit" class="btn gradient full">Send Message</button>
+                </form>
+            </div>
 
-    </form>
-
-  </div>
-
-</section>
+        </section>
 
     </main>
 
     <!-- FOOTER -->
     <footer>
-        <small>&copy; <span id="year"></span> Neighborhood Safety System</small>
+        <small>SAFE NET &copy; <span id="year"></span> &middot; Neighborhood Safety System</small>
     </footer>
 
     <!-- JS -->
@@ -94,26 +268,43 @@
     <script>
         document.getElementById("year").textContent = new Date().getFullYear();
 
-        const form = document.getElementById("contactForm");
+        // Toast helper
+        const toastEl  = document.getElementById("toast");
+        const toastMsg = document.getElementById("toastMsg");
+        const toastIco = toastEl.querySelector("i");
+        function showToast(msg, type = "success") {
+            toastMsg.textContent = msg;
+            toastEl.classList.toggle("error", type === "error");
+            toastIco.className = type === "error" ? "fa-solid fa-circle-exclamation" : "fa-solid fa-circle-check";
+            toastEl.classList.add("show");
+            setTimeout(() => toastEl.classList.remove("show"), 3200);
+        }
 
+        // Form submit (keeps your original API call)
+        const form = document.getElementById("contactForm");
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
 
             const formData = new FormData(form);
-            const payload = Object.fromEntries(formData.entries());
+            const payload  = Object.fromEntries(formData.entries());
+
+            const btn = form.querySelector('button[type="submit"]');
+            const originalText = btn.textContent.trim();
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Sending...';
 
             try {
-                // 👉 Replace with backend API later
                 await window.API?.apiRequest?.("/contact", {
                     method: "POST",
                     body: payload,
                 });
-
-                alert("Message sent successfully!");
+                showToast("Message sent successfully!", "success");
                 form.reset();
-
             } catch (err) {
-                alert(err.message || "Something went wrong");
+                showToast(err.message || "Something went wrong", "error");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
             }
         });
     </script>

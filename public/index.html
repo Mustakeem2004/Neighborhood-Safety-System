@@ -1,85 +1,756 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Home | Neighborhood Safety</title>
 
-  <!-- CSS -->
+  <!-- Your existing CSS (kept) -->
   <link rel="stylesheet" href="/css/styles.css" />
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Fonts: Bebas Neue (display) + IBM Plex Sans (body) + IBM Plex Mono (tactical labels) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* =====  RESET + BASE (scoped to home redesign) ===== */
+    :root{
+      --bg:#050505;
+      --bg-2:#0A0A0A;
+      --bg-3:#111;
+      --line:rgba(255,255,255,.10);
+      --line-2:rgba(255,255,255,.05);
+      --text:#ffffff;
+      --muted:#A1A1AA;
+      --dim:#71717A;
+      --red:#FF3B30;
+      --red-2:#FF1A0D;
+      --yellow:#FFCC00;
+      --blue:#3B82F6;
+      --green:#22c55e;
+    }
+    html{scroll-behavior:smooth;}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      overflow-x:hidden;
+    }
+    *{box-sizing:border-box;}
+    a{color:inherit;text-decoration:none;}
+    img{display:block;max-width:100%;}
+    ::selection{background:var(--red);color:#fff;}
+
+    .display{font-family:"Bebas Neue",Impact,sans-serif;letter-spacing:.01em;text-transform:uppercase;}
+    .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;letter-spacing:.22em;text-transform:uppercase;font-size:11px;}
+    .label{font-family:"IBM Plex Mono",ui-monospace,monospace;letter-spacing:.25em;text-transform:uppercase;font-size:10px;color:var(--dim);}
+
+    /* Override potentially-conflicting classes from styles.css */
+    .topbar, .container, .hero, .nav-links, .brand, footer{all:revert;}
+
+    /* =====  HEADER  ===== */
+    .topbar{
+      position:fixed;top:0;left:0;right:0;z-index:50;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:18px 28px;
+      background:rgba(0,0,0,.0);
+      border-bottom:1px solid transparent;
+      transition:all .3s ease;
+    }
+    .topbar.scrolled{
+      background:rgba(0,0,0,.85);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      border-bottom:1px solid var(--line);
+    }
+    .brand{display:flex;align-items:center;gap:10px;font-family:"Bebas Neue";font-size:24px;letter-spacing:.12em;color:#fff;}
+    .brand .badge{
+      width:36px;height:36px;background:var(--red);
+      display:flex;align-items:center;justify-content:center;position:relative;
+    }
+    .brand .badge svg{width:18px;height:18px;color:#fff;}
+    .brand .badge::after{
+      content:"";position:absolute;top:-3px;right:-3px;width:9px;height:9px;background:var(--yellow);
+      animation:pulse 1.6s ease-in-out infinite;
+    }
+    .brand .accent{color:var(--red);}
+    .nav-links{display:flex;align-items:center;gap:30px;}
+    .nav-links a{
+      font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+      color:var(--muted);position:relative;padding:6px 0;transition:color .2s;
+    }
+    .nav-links a:hover{color:#fff;}
+    .nav-links a::after{
+      content:"";position:absolute;left:0;bottom:-4px;height:1px;width:0;background:var(--red);transition:width .3s;
+    }
+    .nav-links a:hover::after{width:100%;}
+    @media (max-width: 768px){ .nav-links{display:none;} }
+
+    /* =====  BUTTONS  ===== */
+    .btn{
+      display:inline-flex;align-items:center;gap:10px;
+      padding:14px 22px;border:1px solid transparent;cursor:pointer;
+      font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.25em;text-transform:uppercase;
+      transition:all .2s ease;text-decoration:none;
+    }
+    .btn-primary{background:var(--red);color:#fff;}
+    .btn-primary:hover{background:var(--red-2);transform:translateY(-2px);box-shadow:0 0 24px rgba(255,59,48,.45);}
+    .btn-light{background:#fff;color:#000;}
+    .btn-light:hover{background:#e4e4e7;transform:translateY(-2px);}
+    .btn-ghost{background:transparent;border:1px solid #3f3f46;color:#fff;}
+    .btn-ghost:hover{border-color:#fff;}
+    .btn-dark{background:#000;color:#fff;}
+    .btn-dark:hover{background:#18181b;transform:translateY(-2px);}
+    .dot{width:6px;height:6px;border-radius:50%;background:#fff;animation:pulse 1.6s ease-in-out infinite;}
+
+    @keyframes pulse{
+      0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(255,59,48,.7);}
+      50%{opacity:.5;box-shadow:0 0 0 8px rgba(255,59,48,0);}
+    }
+
+    /* =====  HERO  ===== */
+    .container{max-width:1440px;margin:0 auto;padding:0 28px;}
+    .hero{
+      position:relative;min-height:100vh;padding:140px 0 100px;overflow:hidden;
+      text-align:left;
+    }
+    .hero::before{
+      content:"";position:absolute;inset:0;
+      background:url("https://images.pexels.com/photos/30562545/pexels-photo-30562545.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1600") center/cover no-repeat;
+      opacity:.45;
+    }
+    .hero::after{
+      content:"";position:absolute;inset:0;
+      background:linear-gradient(90deg,#000 0%,rgba(0,0,0,.85) 50%,rgba(0,0,0,.5) 100%),
+                 linear-gradient(to top,#000 5%,transparent 60%);
+    }
+    .hero-grid{
+      position:relative;z-index:2;display:grid;grid-template-columns:1fr;gap:50px;align-items:center;
+    }
+    @media(min-width:1024px){.hero-grid{grid-template-columns:1.2fr 1fr;gap:80px;}}
+
+    .live-badge{
+      display:inline-flex;align-items:center;gap:10px;padding:8px 14px;margin-bottom:30px;
+      border:1px solid rgba(255,59,48,.4);background:rgba(255,59,48,.08);
+    }
+    .live-badge .dot{background:var(--red);}
+    .live-badge span{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:#FF6259;}
+
+    .hero h1{
+      font-family:"Bebas Neue";font-size:clamp(54px,9vw,118px);line-height:.92;
+      margin:0 0 28px;letter-spacing:.005em;color:#fff;text-transform:uppercase;
+    }
+    .hero h1 .red{color:var(--red);}
+    .hero p{color:var(--muted);font-size:17px;line-height:1.65;max-width:540px;margin:0 0 36px;}
+    .hero-ctas{display:flex;flex-wrap:wrap;gap:12px;}
+
+    /* Live Feed widget */
+    .feed{
+      position:relative;z-index:2;
+      border:1px solid var(--line);background:rgba(0,0,0,.6);backdrop-filter:blur(20px);
+      box-shadow:0 0 60px rgba(255,59,48,.08);
+    }
+    .feed-head{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:16px 20px;border-bottom:1px solid var(--line);
+    }
+    .feed-head .left{display:flex;align-items:center;gap:10px;}
+    .feed-head .left .dot{background:var(--red);}
+    .feed-head .left strong{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:#fff;font-weight:500;}
+    .feed-head .right{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+    .feed-item{display:flex;gap:16px;padding:16px 20px;border-bottom:1px solid var(--line-2);transition:background .2s;}
+    .feed-item:hover{background:rgba(255,255,255,.03);}
+    .feed-item:last-child{border-bottom:none;}
+    .severity{width:5px;height:34px;flex-shrink:0;margin-top:3px;}
+    .sev-high{background:var(--red);}
+    .sev-med{background:var(--yellow);}
+    .sev-low{background:#71717A;}
+    .feed-item .body{flex:1;min-width:0;}
+    .feed-item .row{display:flex;justify-content:space-between;gap:10px;}
+    .feed-item .id, .feed-item .time{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+    .feed-item .time{color:#a1a1aa;}
+    .feed-item .type{font-family:"Bebas Neue";font-size:18px;letter-spacing:.04em;text-transform:uppercase;color:#fff;margin-top:4px;}
+    .feed-item .where{font-size:12px;color:var(--dim);margin-top:2px;}
+    .feed-foot{
+      display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-top:1px solid var(--line);
+      font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+    }
+    .feed-foot .total{color:var(--dim);}
+    .feed-foot a{color:#fff;}
+    .feed-foot a:hover{color:var(--red);}
+
+    /* =====  STATS  ===== */
+    .stats{background:#0A0A0A;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+    .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);}
+    @media(min-width:768px){.stats-grid{grid-template-columns:repeat(4,1fr);}}
+    .stat{padding:36px 24px;border-right:1px solid var(--line);}
+    .stat:last-child{border-right:none;}
+    @media(max-width:767px){.stat:nth-child(2n){border-right:none;}.stat:nth-child(-n+2){border-bottom:1px solid var(--line);}}
+    .stat .num{font-family:"Bebas Neue";font-size:clamp(40px,5vw,64px);line-height:1;letter-spacing:.02em;color:#fff;transition:color .2s;}
+    .stat:hover .num{color:var(--red);}
+    .stat .lbl{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--dim);margin-top:10px;display:block;}
+
+    /* Marquee */
+    .marquee{background:var(--red);overflow:hidden;border-top:1px solid var(--line);}
+    .marquee-track{display:flex;white-space:nowrap;animation:scroll 36s linear infinite;padding:14px 0;}
+    .marquee-track span{
+      font-family:"Bebas Neue";font-size:18px;color:#fff;letter-spacing:.3em;text-transform:uppercase;
+      padding:0 28px;display:inline-flex;align-items:center;gap:28px;
+    }
+    .marquee-track span::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#fff;}
+    @keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+    /* =====  GENERIC SECTION  ===== */
+    section.block{padding:100px 0;border-top:1px solid var(--line-2);background:var(--bg);}
+    .block-head{margin-bottom:60px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:30px;align-items:flex-end;}
+    .block-head .label{margin-bottom:14px;}
+    .block-head h2{
+      font-family:"Bebas Neue";font-size:clamp(40px,6vw,76px);line-height:.95;letter-spacing:.02em;
+      text-transform:uppercase;margin:0;color:#fff;
+    }
+    .block-head h2 .red{color:var(--red);}
+    .block-head h2 .dim{color:#52525b;}
+    .block-head p{color:var(--muted);font-size:15px;max-width:420px;margin:0;line-height:1.65;}
+
+    /* Protocol */
+    .protocol-grid{display:grid;grid-template-columns:1fr;border:1px solid var(--line);}
+    @media(min-width:768px){.protocol-grid{grid-template-columns:repeat(3,1fr);}}
+    .step{position:relative;padding:36px;border-bottom:1px solid var(--line);transition:background .2s;}
+    @media(min-width:768px){.step{border-bottom:none;border-right:1px solid var(--line);}.step:last-child{border-right:none;}}
+    .step:hover{background:rgba(255,255,255,.02);}
+    .step .top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:50px;}
+    .step .num{font-family:"Bebas Neue";font-size:72px;line-height:.85;color:#27272a;}
+    .step .icon{width:48px;height:48px;border:1px solid;display:flex;align-items:center;justify-content:center;}
+    .step.red .icon{border-color:rgba(255,59,48,.4);color:var(--red);}
+    .step.yellow .icon{border-color:rgba(255,204,0,.4);color:var(--yellow);}
+    .step.blue .icon{border-color:rgba(59,130,246,.4);color:var(--blue);}
+    .step h3{font-family:"Bebas Neue";font-size:30px;letter-spacing:.04em;text-transform:uppercase;color:#fff;margin:0 0 12px;}
+    .step p{font-size:14px;line-height:1.65;color:var(--muted);margin:0;}
+    .step::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--red);transition:width .5s;}
+    .step:hover::after{width:100%;}
+
+    /* Features bento */
+    .bento{display:grid;grid-template-columns:1fr;gap:18px;}
+    @media(min-width:768px){.bento{grid-template-columns:repeat(12,1fr);grid-auto-rows:minmax(160px,auto);}}
+    .card{position:relative;border:1px solid var(--line);background:#0A0A0A;padding:36px;overflow:hidden;transition:border-color .2s;}
+    .card:hover{border-color:rgba(255,255,255,.3);}
+    .card .ico{width:28px;height:28px;color:#71717A;transition:color .2s;}
+    .card:hover .ico{color:#fff;}
+    .card h3{font-family:"Bebas Neue";font-size:30px;letter-spacing:.04em;text-transform:uppercase;color:#fff;margin:32px 0 12px;line-height:.95;}
+    .card p{font-size:14px;line-height:1.65;color:var(--muted);margin:0;}
+
+    .card-big{grid-column:span 12;min-height:480px;display:flex;flex-direction:column;justify-content:space-between;padding:40px;}
+    @media(min-width:768px){.card-big{grid-column:span 7;grid-row:span 2;}}
+    .card-big::before{
+      content:"";position:absolute;inset:0;
+      background:url("https://images.pexels.com/photos/13650779/pexels-photo-13650779.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1200") center/cover no-repeat;
+      transition:transform .7s;z-index:0;
+    }
+    .card-big:hover::before{transform:scale(1.05);}
+    .card-big::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,#000 5%,rgba(0,0,0,.7) 50%,transparent);z-index:1;}
+    .card-big > *{position:relative;z-index:2;}
+    .card-big .pill{
+      align-self:flex-start;display:inline-flex;align-items:center;gap:8px;padding:6px 12px;
+      border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);backdrop-filter:blur(6px);
+      font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+    }
+    .card-big h3{font-size:48px;}
+
+    .card-half{grid-column:span 12;}
+    @media(min-width:768px){.card-half{grid-column:span 5;}}
+
+    .card-red{background:var(--red);border-color:var(--red);transition:background .2s;}
+    .card-red:hover{background:var(--red-2);border-color:var(--red-2);}
+    .card-red .ico, .card-red h3, .card-red p{color:#fff;}
+    .card-red p{color:rgba(255,255,255,.85);}
+
+    .card-third{grid-column:span 12;}
+    @media(min-width:768px){.card-third{grid-column:span 4;}}
+    .card-third h3{font-size:24px;}
+
+    /* Testimonials */
+    .testi-grid{display:grid;grid-template-columns:1fr;gap:18px;}
+    @media(min-width:768px){.testi-grid{grid-template-columns:repeat(3,1fr);}}
+    .testi{border:1px solid var(--line);background:#050505;padding:36px;display:flex;flex-direction:column;transition:border-color .2s;}
+    .testi:hover{border-color:rgba(255,59,48,.4);}
+    .testi .quote{font-family:"Bebas Neue";font-size:60px;line-height:.7;color:var(--red);margin-bottom:14px;}
+    .testi blockquote{margin:0;flex:1;font-size:16px;line-height:1.6;color:#e4e4e7;}
+    .testi .who{display:flex;align-items:center;gap:14px;margin-top:30px;padding-top:22px;border-top:1px solid var(--line);}
+    .testi .who img{width:44px;height:44px;border-radius:0;object-fit:cover;filter:grayscale(1);transition:filter .3s;}
+    .testi:hover .who img{filter:grayscale(0);}
+    .testi .name{font-family:"Bebas Neue";font-size:18px;letter-spacing:.04em;text-transform:uppercase;color:#fff;}
+    .testi .role{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+    /* FAQ */
+    .faq-wrap{max-width:920px;margin:0 auto;}
+    .faq{border-top:1px solid var(--line);}
+    .faq-item{border-bottom:1px solid var(--line);}
+    .faq-q{
+      width:100%;background:transparent;border:0;color:#fff;cursor:pointer;
+      display:flex;justify-content:space-between;align-items:flex-start;gap:24px;
+      padding:26px 0;text-align:left;
+    }
+    .faq-q .qtext{display:flex;align-items:flex-start;gap:24px;flex:1;}
+    .faq-q .qnum{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.25em;color:#52525b;margin-top:8px;}
+    .faq-q .qtitle{font-family:"Bebas Neue";font-size:24px;letter-spacing:.04em;text-transform:uppercase;color:#fff;line-height:1.15;transition:color .2s;}
+    .faq-q:hover .qtitle{color:var(--red);}
+    .faq-q .toggle{
+      width:38px;height:38px;border:1px solid rgba(255,255,255,.15);
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s;
+      font-size:18px;color:#fff;
+    }
+    .faq-item.open .toggle{background:var(--red);border-color:var(--red);transform:rotate(180deg);}
+    .faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .4s;color:var(--muted);font-size:15px;line-height:1.7;}
+    .faq-item.open .faq-a{max-height:300px;padding:0 0 26px 46px;}
+
+    /* Final CTA */
+    .final-cta{background:var(--red);padding:100px 0;position:relative;overflow:hidden;}
+    .final-cta::before{
+      content:"";position:absolute;inset:0;opacity:.25;
+      background-image:linear-gradient(rgba(255,255,255,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.1) 1px,transparent 1px);
+      background-size:60px 60px;
+    }
+    .final-cta-grid{position:relative;display:grid;grid-template-columns:1fr;gap:40px;align-items:center;}
+    @media(min-width:768px){.final-cta-grid{grid-template-columns:2fr 1fr;}}
+    .final-cta h2{font-family:"Bebas Neue";font-size:clamp(48px,8vw,110px);line-height:.92;color:#fff;margin:0;text-transform:uppercase;letter-spacing:.02em;}
+    .final-cta .actions{display:flex;flex-direction:column;gap:10px;}
+    .final-cta .actions .btn{justify-content:space-between;padding:20px 24px;}
+
+    /* Footer */
+    footer.foot{background:var(--bg);border-top:1px solid var(--line);padding:80px 0 40px;}
+    .foot-display{
+      font-family:"Bebas Neue";font-size:clamp(80px,16vw,200px);line-height:.85;letter-spacing:.005em;
+      text-transform:uppercase;color:#fff;margin:0;
+    }
+    .foot-grid{display:grid;grid-template-columns:1fr;gap:40px;margin-top:60px;padding-top:48px;border-top:1px solid var(--line);}
+    @media(min-width:900px){.foot-grid{grid-template-columns:2.5fr 1fr 1fr 1fr 1.4fr;}}
+    .foot-col h4{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--dim);margin:0 0 18px;font-weight:500;}
+    .foot-col ul{list-style:none;padding:0;margin:0;}
+    .foot-col li{margin-bottom:12px;}
+    .foot-col a{font-size:14px;color:#d4d4d8;}
+    .foot-col a:hover{color:var(--red);}
+    .foot-col p{font-size:14px;color:var(--muted);line-height:1.6;max-width:280px;margin:14px 0 0;}
+    .socials{display:flex;gap:10px;margin-top:22px;}
+    .socials a{
+      width:36px;height:36px;border:1px solid var(--line);
+      display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .2s;
+    }
+    .socials a:hover{background:var(--red);color:#fff;border-color:var(--red);}
+    .emergency-box{border:1px solid rgba(255,59,48,.4);background:rgba(255,59,48,.08);padding:18px;}
+    .emergency-box .lbl{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#FF6259;}
+    .emergency-box .num{font-family:"Bebas Neue";font-size:24px;color:#fff;letter-spacing:.04em;margin-top:4px;}
+    .foot-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:14px;margin-top:54px;padding-top:24px;border-top:1px solid var(--line);}
+    .foot-bottom small{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--dim);}
+    .foot-bottom .ok{display:flex;align-items:center;gap:8px;}
+    .foot-bottom .ok .d{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.6s ease-in-out infinite;}
+
+    /* Floating Report */
+    .float-report{
+      position:fixed;bottom:24px;right:24px;z-index:60;
+      display:inline-flex;align-items:center;gap:10px;
+      background:var(--red);color:#fff;padding:14px 20px;
+      font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.25em;text-transform:uppercase;
+      box-shadow:0 0 30px rgba(255,59,48,.5);transition:all .2s;text-decoration:none;
+    }
+    .float-report:hover{background:var(--red-2);transform:translateY(-2px);}
+
+    /* Reveal */
+    .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s,transform .8s;}
+    .reveal.in{opacity:1;transform:translateY(0);}
+  </style>
 </head>
 
 <body>
 
   <!-- NAVBAR -->
-  <header class="topbar">
-    <div class="brand">Neighborhood Safety</div>
-    <nav id="topNav" class="nav-links"></nav>
+  <header class="topbar" id="topbar">
+    <a href="/" class="brand">
+      <span class="badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.5 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+      </span>
+      Safe<span class="accent">Net</span>
+    </a>
+    <nav id="topNav" class="nav-links">
+      <a href="#hero">Home</a>
+      <a href="#features">Platform</a>
+      <a href="#protocol">Protocol</a>
+      <a href="#faq">FAQ</a>
+    </nav>
   </header>
 
-  <!-- MAIN -->
-  <main class="container">
+  <!-- HERO -->
+  <main>
+    <section class="hero" id="hero">
+      <div class="container hero-grid">
 
-    <!-- HERO -->
-    <section class="hero" style="text-align:center; margin-top:50px;">
-      <h1 style="font-size:40px; margin-bottom:15px;">
-        Safer Communities Start With You
-      </h1>
+        <div class="reveal">
+          <div class="live-badge">
+            <span class="dot"></span>
+            <span>Live · 14 Active Alerts in Your Area</span>
+          </div>
 
-      <p style="color:#666; max-width:600px; margin:auto;">
-        Report incidents instantly, track updates in real-time, and help
-        authorities take faster action in your neighborhood.
-      </p>
+          <h1>Real-Time<br>Threat<br><span class="red">Intelligence.</span></h1>
 
-      <!-- BUTTONS -->
-      <div id="ctaButtons" style="margin-top:30px;"></div>
+          <p>Community-driven alerts. Instant emergency broadcasting. Don't wait for the news — know what's happening on your street, right now.</p>
+
+          <div class="hero-ctas" id="ctaButtons">
+            <!-- Filled by your existing JS below (logged-in / out) -->
+          </div>
+        </div>
+
+        <!-- Live Feed -->
+        <aside class="feed reveal" style="transition-delay:.15s">
+          <div class="feed-head">
+            <div class="left">
+              <span class="dot"></span>
+              <strong>Live Dispatch Feed</strong>
+            </div>
+            <div class="right">Auto-refresh</div>
+          </div>
+          <div>
+            <div class="feed-item"><div class="severity sev-high"></div><div class="body">
+              <div class="row"><span class="id">INC-2418</span><span class="time">2m ago</span></div>
+              <div class="type">Suspicious Activity</div>
+              <div class="where">Maple Ave · 0.4 mi</div>
+            </div></div>
+            <div class="feed-item"><div class="severity sev-high"></div><div class="body">
+              <div class="row"><span class="id">INC-2417</span><span class="time">11m ago</span></div>
+              <div class="type">Vehicle Break-in</div>
+              <div class="where">5th &amp; Oak · 0.9 mi</div>
+            </div></div>
+            <div class="feed-item"><div class="severity sev-med"></div><div class="body">
+              <div class="row"><span class="id">INC-2416</span><span class="time">23m ago</span></div>
+              <div class="type">Loitering Group</div>
+              <div class="where">Park Plaza · 1.2 mi</div>
+            </div></div>
+            <div class="feed-item"><div class="severity sev-low"></div><div class="body">
+              <div class="row"><span class="id">INC-2415</span><span class="time">38m ago</span></div>
+              <div class="type">Loud Disturbance</div>
+              <div class="where">Birch Rd · 0.7 mi</div>
+            </div></div>
+            <div class="feed-item"><div class="severity sev-med"></div><div class="body">
+              <div class="row"><span class="id">INC-2414</span><span class="time">1h ago</span></div>
+              <div class="type">Package Theft</div>
+              <div class="where">Elm St · 1.5 mi</div>
+            </div></div>
+          </div>
+          <div class="feed-foot">
+            <span class="total">Showing 5 of 14</span>
+            <a href="#features">View All →</a>
+          </div>
+        </aside>
+
+      </div>
     </section>
 
+    <!-- STATS -->
+    <section class="stats">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stat"><div class="num">02:14</div><span class="lbl">Avg Response (min)</span></div>
+          <div class="stat"><div class="num">12,450+</div><span class="lbl">Active Members</span></div>
+          <div class="stat"><div class="num">14</div><span class="lbl">Live Incidents</span></div>
+          <div class="stat"><div class="num">100%</div><span class="lbl">Verified Reports</span></div>
+        </div>
+      </div>
+      <div class="marquee">
+        <div class="marquee-track">
+          <span>Stay Vigilant</span><span>Report Fast</span><span>Protect Your Block</span>
+          <span>Verified Alerts Only</span><span>Community First</span><span>Zero Noise · Zero BS</span>
+          <span>Stay Vigilant</span><span>Report Fast</span><span>Protect Your Block</span>
+          <span>Verified Alerts Only</span><span>Community First</span><span>Zero Noise · Zero BS</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROTOCOL -->
+    <section class="block" id="protocol">
+      <div class="container">
+        <div class="block-head reveal">
+          <div>
+            <div class="label">// Section 02 — Operating Protocol</div>
+            <h2>The Protocol.<br><span class="dim">Three steps. Zero delay.</span></h2>
+          </div>
+          <p>Built for speed and signal — not noise. Every alert is filtered, verified, and dispatched before it reaches your screen.</p>
+        </div>
+
+        <div class="protocol-grid reveal">
+          <div class="step red">
+            <div class="top">
+              <span class="num">01</span>
+              <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
+            </div>
+            <h3>Report</h3>
+            <p>Trigger an alert in seconds via mobile or web. Photos, location and category — all optional, all anonymous.</p>
+          </div>
+          <div class="step yellow">
+            <div class="top">
+              <span class="num">02</span>
+              <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.5 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></div>
+            </div>
+            <h3>Verify</h3>
+            <p>Reports cross-reference with neighboring nodes. Multi-source confirmation flags credibility before broadcast.</p>
+          </div>
+          <div class="step blue">
+            <div class="top">
+              <span class="num">03</span>
+              <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></svg></div>
+            </div>
+            <h3>Broadcast</h3>
+            <p>Verified alerts push instantly to every member inside a 5km radius — and to local dispatch when severity demands.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="block" id="features">
+      <div class="container">
+        <div class="block-head reveal" style="display:block;max-width:780px;">
+          <div class="label">// Section 03 — System Capabilities</div>
+          <h2>Built for the moments<br><span class="red">that matter most.</span></h2>
+        </div>
+
+        <div class="bento reveal">
+          <div class="card card-big">
+            <span class="pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FF3B30" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg> Push · SMS · Email</span>
+            <div>
+              <h3>Instant Mobile<br>Alerts.</h3>
+              <p style="color:#d4d4d8;max-width:480px;">Bypass the noise. High-priority push notifications for verified local incidents — delivered the moment they happen.</p>
+            </div>
+          </div>
+
+          <div class="card card-half">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+            <h3>Anonymous Reporting</h3>
+            <p>Protect your identity while protecting your block. Reports never expose your name, phone, or address — by design, not policy.</p>
+          </div>
+
+          <div class="card card-half card-red">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <h3>One-Tap Emergency Dialer</h3>
+            <p>Direct connection to local dispatch — pre-routed to the right precinct based on your verified address. No menu trees, no holds.</p>
+          </div>
+
+          <div class="card card-third">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <h3>Live Heatmap</h3>
+            <p>Visualize incident density block-by-block in real time.</p>
+          </div>
+
+          <div class="card card-third">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <h3>Address Verified</h3>
+            <p>Postcard-PIN verification keeps trolls and bots out of your feed.</p>
+          </div>
+
+          <div class="card card-third">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <h3>End-to-End Encrypted</h3>
+            <p>Your reports, chats and location data — encrypted in transit and at rest.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="block" style="background:#0A0A0A;">
+      <div class="container">
+        <div class="block-head reveal">
+          <div>
+            <div class="label">// Section 04 — Community Sitreps</div>
+            <h2>Trusted by the<br>blocks that matter.</h2>
+          </div>
+          <p style="display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;background:var(--red);border-radius:50%;"></span> 1,240+ Verified Reviews</p>
+        </div>
+
+        <div class="testi-grid reveal">
+          <figure class="testi">
+            <div class="quote">"</div>
+            <blockquote>Since SafeNet, our block's response time to emergencies dropped by half. It's an indispensable tool — period.</blockquote>
+            <div class="who">
+              <img src="https://images.unsplash.com/photo-1714857615218-bcc528e02d77?crop=entropy&cs=srgb&fm=jpg&w=200&h=200&fit=crop" alt="Marcus T." />
+              <div><div class="name">Marcus T.</div><div class="role">Block Captain · Sector 04</div></div>
+            </div>
+          </figure>
+          <figure class="testi">
+            <div class="quote">"</div>
+            <blockquote>The instant alerts saved my car from being broken into. The community watch is finally modernized.</blockquote>
+            <div class="who">
+              <img src="https://images.unsplash.com/photo-1647970231365-3313b60b7039?crop=entropy&cs=srgb&fm=jpg&w=200&h=200&fit=crop" alt="Sarah J." />
+              <div><div class="name">Sarah J.</div><div class="role">Resident · Maple Heights</div></div>
+            </div>
+          </figure>
+          <figure class="testi">
+            <div class="quote">"</div>
+            <blockquote>Finally, a platform that doesn't rely on toxic social feeds. Just pure, verified safety alerts.</blockquote>
+            <div class="who">
+              <img src="https://images.pexels.com/photos/8974302/pexels-photo-8974302.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=200&h=200&fit=crop" alt="David L." />
+              <div><div class="name">David L.</div><div class="role">Neighborhood Watch · West End</div></div>
+            </div>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="block" id="faq">
+      <div class="container faq-wrap">
+        <div class="block-head reveal" style="display:block;">
+          <div class="label">// Section 05 — Briefing</div>
+          <h2>Frequently<br>Asked.</h2>
+        </div>
+
+        <div class="faq reveal" id="faqList">
+          <!-- populated by JS below -->
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="final-cta">
+      <div class="container final-cta-grid reveal">
+        <div>
+          <div class="mono" style="color:rgba(255,255,255,.8);margin-bottom:18px;">// Final Briefing</div>
+          <h2>Your block.<br>Your watch.<br>Your network.</h2>
+        </div>
+        <div class="actions">
+          <a href="/register.html" class="btn btn-dark">Create Free Account →</a>
+          <a href="/login.html" class="btn btn-light">Login to Dashboard →</a>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- FOOTER -->
-  <footer>
-    <small>&copy; <span id="year"></span> Neighborhood Safety</small>
+  <footer class="foot">
+    <div class="container">
+      <h3 class="foot-display">Stay<br>Vigilant.</h3>
+
+      <div class="foot-grid">
+        <div class="foot-col">
+          <div class="brand" style="font-size:22px;">
+            <span class="badge" style="width:30px;height:30px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.5 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></span>
+            Safe<span class="accent">Net</span>
+          </div>
+          <p>Real-time threat intelligence for the neighborhoods that refuse to be passive.</p>
+          <div class="socials">
+            <a href="#"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22 5.8a8.49 8.49 0 0 1-2.36.64 4.13 4.13 0 0 0 1.81-2.27 8.21 8.21 0 0 1-2.61 1 4.1 4.1 0 0 0-7 3.74A11.64 11.64 0 0 1 3.39 4.62a4.16 4.16 0 0 0 1.27 5.49A4.09 4.09 0 0 1 2.8 9.6v.05a4.1 4.1 0 0 0 3.3 4 4.07 4.07 0 0 1-1.85.07 4.11 4.11 0 0 0 3.83 2.84A8.22 8.22 0 0 1 2 18.28 11.57 11.57 0 0 0 8.29 20 11.59 11.59 0 0 0 20 8.45v-.53A8.43 8.43 0 0 0 22 5.8z"/></svg></a>
+            <a href="#"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor"/></svg></a>
+            <a href="#"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
+          </div>
+        </div>
+        <div class="foot-col">
+          <h4>Platform</h4>
+          <ul><li><a href="#">Live Map</a></li><li><a href="#">Alerts</a></li><li><a href="#">Dispatch</a></li><li><a href="#">Mobile App</a></li></ul>
+        </div>
+        <div class="foot-col">
+          <h4>Community</h4>
+          <ul><li><a href="#">Block Captains</a></li><li><a href="#">HOAs</a></li><li><a href="#">Partners</a></li><li><a href="#">Press</a></li></ul>
+        </div>
+        <div class="foot-col">
+          <h4>Company</h4>
+          <ul><li><a href="#">About</a></li><li><a href="#">Careers</a></li><li><a href="#">Privacy</a></li><li><a href="#">Contact</a></li></ul>
+        </div>
+        <div class="foot-col">
+          <h4>Emergency</h4>
+          <div class="emergency-box">
+            <div class="lbl">Dispatch</div>
+            <div class="num">911</div>
+            <div class="lbl" style="margin-top:14px;">Tip Line</div>
+            <div class="num" style="font-size:20px;">555-SAFE</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="foot-bottom">
+        <small>&copy; <span id="year"></span> SafeNet · Neighborhood Safety</small>
+        <small class="ok"><span class="d"></span> All systems operational</small>
+      </div>
+    </div>
   </footer>
 
-  <!-- JS -->
+  <!-- Floating Report -->
+  <a href="#" class="float-report">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 18a5 5 0 0 1-.42-9.97 9 9 0 1 1 17.71 2.66"/><path d="M12 12v9"/><path d="m8 17 4 4 4-4"/></svg>
+    Report Now
+  </a>
+
+  <!-- Your existing JS (kept) -->
   <script src="/js/api.js"></script>
   <script src="/js/common.js"></script>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-
-      const user = window.API.getUser();
+      /* === YOUR ORIGINAL LOGIN-AWARE CTA LOGIC (unchanged behavior) === */
+      const user = (window.API && window.API.getUser) ? window.API.getUser() : null;
       const cta = document.getElementById("ctaButtons");
-
       document.getElementById("year").textContent = new Date().getFullYear();
 
       if (!user) {
-        // Not logged in
         cta.innerHTML = `
-          <a href="/register.html" style="padding:12px 20px; margin:5px; border-radius:8px; background:#1a7f64; color:white; text-decoration:none;">Create Account</a>
-          <a href="/login.html" style="padding:12px 20px; margin:5px; border-radius:8px; border:1px solid #ccc; text-decoration:none;">Login</a>
+          <a href="/register.html" class="btn btn-light">Create Account →</a>
+          <a href="/login.html" class="btn btn-ghost">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            Login
+          </a>
         `;
       } else {
-        // Logged in
         cta.innerHTML = `
-          <a href="/dashboard.html" style="padding:12px 20px; margin:5px; border-radius:8px; background:#1a7f64; color:white; text-decoration:none;">Go to Dashboard</a>
-          ${
-            user.role === "admin"
-              ? `<a href="/admin.html" style="padding:12px 20px; margin:5px; border-radius:8px; border:1px solid #ccc; text-decoration:none;">Admin Panel</a>`
-              : ""
-          }
+          <a href="/dashboard.html" class="btn btn-primary">
+            <span class="dot"></span> Go to Dashboard →
+          </a>
+          ${user.role === "admin"
+            ? `<a href="/admin.html" class="btn btn-ghost">Admin Panel →</a>`
+            : ""}
         `;
       }
 
+      /* === Sticky header background on scroll === */
+      const topbar = document.getElementById("topbar");
+      const onScroll = () => topbar.classList.toggle("scrolled", window.scrollY > 8);
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+
+      /* === FAQ accordion === */
+      const faqs = [
+        { q: "How is SafeNet different from other neighborhood apps?", a: "SafeNet is purpose-built for emergency and incident reporting only. No classifieds, no missing-cat threads, no political rants — just actionable, verified safety intelligence delivered the moment it matters." },
+        { q: "Is my location tracked constantly?", a: "No. Your location is only shared at the moment you actively submit a report. Otherwise, the app stays silent. Period." },
+        { q: "How are users verified?", a: "We use multi-factor address verification — postcard PINs or utility-bill checks — to confirm every member actually lives within the jurisdiction they're alerting." },
+        { q: "Can I report anonymously?", a: "Yes. Anonymous reporting is the default. Your name, phone, and exact address are never shown to other members or attached to broadcasts." },
+        { q: "What happens after I submit a report?", a: "Your report is cross-referenced with nearby nodes within seconds. If verified, it's broadcast to a 5km radius — and escalated to local dispatch when severity demands." },
+        { q: "Is SafeNet free?", a: "Yes — for residents. We offer paid tiers for HOAs, building management, and municipal partners that need analytics and dispatch integrations." }
+      ];
+      const list = document.getElementById("faqList");
+      list.innerHTML = faqs.map((f, i) => `
+        <div class="faq-item ${i===0?'open':''}">
+          <button class="faq-q" type="button">
+            <span class="qtext">
+              <span class="qnum">${String(i+1).padStart(2,'0')}</span>
+              <span class="qtitle">${f.q}</span>
+            </span>
+            <span class="toggle">+</span>
+          </button>
+          <div class="faq-a">${f.a}</div>
+        </div>
+      `).join("");
+      list.querySelectorAll(".faq-q").forEach(btn => {
+        btn.addEventListener("click", () => {
+          btn.parentElement.classList.toggle("open");
+          btn.querySelector(".toggle").textContent =
+            btn.parentElement.classList.contains("open") ? "−" : "+";
+        });
+      });
+
+      /* === Reveal-on-scroll === */
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+      }, { threshold: 0.12 });
+      document.querySelectorAll(".reveal").forEach(el => io.observe(el));
     });
   </script>
-
 </body>
-
 </html>

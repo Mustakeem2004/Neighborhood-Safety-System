@@ -4,28 +4,227 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login | Neighborhood Safety</title>
+    <title>Login | SAFE NET</title>
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="/css/styles.css" />
-
-    <!-- ICONS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        :root{
+            --bg-0:#0b0b0d;--bg-1:#111115;--bg-2:#16161c;--bg-3:#1c1c24;
+            --line:rgba(255,255,255,.07);--line-strong:rgba(255,255,255,.14);
+            --text:#f2f2f4;--text-dim:#b7b7be;--text-mute:#7a7a83;
+            --red:#ff4a4a;--red-soft:#ff6b6b;--teal:#00c48c;
+            --radius-md:14px;--radius-lg:22px;--radius-pill:999px;
+            --shadow-1:0 1px 0 rgba(255,255,255,.03) inset,0 10px 30px rgba(0,0,0,.45);
+            --shadow-red:0 0 0 1px rgba(255,74,74,.35),0 12px 40px rgba(255,74,74,.22);
+        }
+        *,*::before,*::after{box-sizing:border-box}
+        html,body{margin:0;padding:0;background:var(--bg-0);color:var(--text);font-family:"Archivo",Arial,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh}
+        body{
+            position:relative;
+            background:
+                radial-gradient(1100px 600px at 85% -10%,rgba(255,74,74,.12),transparent 60%),
+                radial-gradient(900px 500px at -10% 80%,rgba(0,196,140,.06),transparent 60%),
+                var(--bg-0);
+            display:flex;flex-direction:column;
+        }
+        /* grid pattern overlay */
+        body::before{
+            content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.35;
+            background-image:
+                linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+                linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+            background-size:64px 64px;
+            mask-image:radial-gradient(ellipse at center,#000 40%,transparent 75%);
+            -webkit-mask-image:radial-gradient(ellipse at center,#000 40%,transparent 75%);
+        }
+        a{color:inherit;text-decoration:none}
+        ::selection{background:var(--red);color:#fff}
+        @keyframes pulse{0%,100%{transform:translateY(-50%) scale(1);opacity:1}50%{transform:translateY(-50%) scale(1.15);opacity:.75}}
+        @keyframes pulse2{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:.75}}
+
+        /* TOPBAR */
+        .topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px 40px;background:rgba(11,11,13,.75);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+        .brand{display:inline-flex;align-items:center;gap:12px;font-family:"Anton",sans-serif;font-size:22px;letter-spacing:.08em;text-transform:uppercase;position:relative}
+        .brand::before{content:"";width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#1a1a22,#0e0e13);border:1px solid var(--line-strong);display:inline-block}
+        .brand::after{content:"";position:absolute;left:12px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:var(--red);box-shadow:0 0 0 3px rgba(255,74,74,.18),0 0 14px rgba(255,74,74,.55);animation:pulse 1.8s ease-in-out infinite}
+        .nav-links{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+        .nav-links a,.nav-links button,.nav-links span{display:inline-flex;align-items:center;padding:9px 16px;border-radius:var(--radius-pill);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);background:transparent;border:1px solid transparent;cursor:pointer;transition:color .2s,background-color .2s,transform .2s}
+        .nav-links a:hover,.nav-links button:hover{color:var(--text);background:rgba(255,255,255,.04)}
+        .nav-links a.active,.nav-links .active{background:var(--teal);color:#07110c}
+        .nav-links .logout,.nav-links a[href*="logout"]{background:var(--red);color:#fff}
+
+        /* LAYOUT */
+        .auth-container{
+            position:relative;z-index:1;
+            flex:1;
+            max-width:1200px;
+            width:100%;
+            margin:0 auto;
+            padding:56px 40px 80px;
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:80px;
+            align-items:center;
+        }
+
+        /* LEFT SIDE — HERO */
+        .hero-side{position:relative}
+        .hero-pill{display:inline-flex;align-items:center;gap:10px;padding:7px 14px;margin-bottom:28px;border:1px solid rgba(255,74,74,.45);border-radius:var(--radius-pill);color:var(--red);background:rgba(255,74,74,.05);font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+        .hero-pill::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 3px rgba(255,74,74,.18);animation:pulse2 1.6s ease-in-out infinite}
+        .hero-h{font-family:"Anton",sans-serif;font-weight:400;font-size:clamp(56px,7vw,112px);line-height:.88;letter-spacing:-.01em;text-transform:uppercase;margin:0 0 28px;color:var(--text)}
+        .hero-h .accent{color:var(--red)}
+        .hero-p{max-width:480px;color:var(--text-dim);font-size:16px;line-height:1.65;margin:0 0 36px}
+
+        /* feature tiles */
+        .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:520px}
+        .tile{padding:16px 14px;border-radius:var(--radius-md);background:linear-gradient(180deg,var(--bg-2),var(--bg-1));border:1px solid var(--line);transition:transform .2s,border-color .2s}
+        .tile:hover{transform:translateY(-2px);border-color:var(--line-strong)}
+        .tile i{color:var(--red);font-size:16px;margin-bottom:10px}
+        .tile-label{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-mute);margin-bottom:4px}
+        .tile-value{font-family:"Anton",sans-serif;font-size:22px;letter-spacing:.04em;color:var(--text)}
+
+        /* RIGHT SIDE — CARD */
+        .auth-card{
+            position:relative;
+            background:linear-gradient(180deg,var(--bg-2),var(--bg-1));
+            border:1px solid var(--line);
+            border-radius:var(--radius-lg);
+            padding:44px 40px 36px;
+            box-shadow:var(--shadow-1);
+            overflow:hidden;
+            max-width:480px;
+            justify-self:end;
+            width:100%;
+        }
+        .auth-card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,var(--red),transparent 70%)}
+
+        .kicker{display:inline-flex;align-items:center;gap:8px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-mute);margin-bottom:12px}
+        .kicker i{color:var(--red)}
+
+        .auth-card h1{font-family:"Anton",sans-serif;font-weight:400;font-size:44px;line-height:1;letter-spacing:.02em;text-transform:uppercase;margin:0 0 12px;color:var(--text)}
+        .muted{color:var(--text-dim);font-size:14.5px;margin:0 0 32px}
+
+        /* FORM */
+        .auth-form{display:flex;flex-direction:column;gap:20px}
+        .form-field{display:flex;flex-direction:column;gap:8px}
+        .form-field label{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-mute);font-weight:600}
+        .form-field input{width:100%;padding:14px 16px;background:var(--bg-3);color:var(--text);border:1px solid var(--line);border-radius:var(--radius-md);font-family:"Archivo",sans-serif;font-size:14.5px;transition:border-color .2s,background-color .2s,box-shadow .2s;outline:none}
+        .form-field input::placeholder{color:var(--text-mute)}
+        .form-field input:hover{border-color:var(--line-strong)}
+        .form-field input:focus{border-color:var(--red);background:#1e1e26;box-shadow:0 0 0 4px rgba(255,74,74,.10)}
+
+        /* password */
+        .password-wrapper{position:relative}
+        .password-wrapper input{padding-right:48px}
+        .toggle-password{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-mute);cursor:pointer;padding:6px;transition:color .2s}
+        .toggle-password:hover{color:var(--red)}
+
+        /* row between fields */
+        .row-between{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:-6px;font-size:13px}
+        .checkbox{display:inline-flex;align-items:center;gap:8px;color:var(--text-dim);cursor:pointer;user-select:none}
+        .checkbox input{appearance:none;-webkit-appearance:none;width:16px;height:16px;border-radius:4px;border:1px solid var(--line-strong);background:var(--bg-3);cursor:pointer;position:relative;transition:background-color .2s,border-color .2s}
+        .checkbox input:checked{background:var(--red);border-color:var(--red)}
+        .checkbox input:checked::after{content:"\2713";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700}
+        .forgot{color:var(--red);font-weight:600;font-size:12.5px;letter-spacing:.04em;transition:color .2s}
+        .forgot:hover{color:var(--red-soft)}
+
+        /* button */
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:"Archivo",sans-serif;font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:16px 28px;border-radius:var(--radius-pill);border:1px solid transparent;background:var(--bg-3);color:var(--text);cursor:pointer;transition:transform .2s,background-color .2s,box-shadow .2s}
+        .btn.full{width:100%}
+        .btn.gradient{background:var(--red);color:#fff;box-shadow:var(--shadow-red);margin-top:6px}
+        .btn.gradient::before{content:"\f023";font-family:"Font Awesome 6 Free";font-weight:900;font-size:12px}
+        .btn.gradient:hover{background:var(--red-soft);transform:translateY(-2px);box-shadow:0 0 0 1px rgba(255,74,74,.5),0 18px 48px rgba(255,74,74,.32)}
+        .btn.gradient:active{transform:translateY(0)}
+
+        /* divider */
+        .divider{display:flex;align-items:center;gap:12px;margin:18px 0 6px;color:var(--text-mute);font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase}
+        .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+        /* switch */
+        .switch{margin:6px 0 0;text-align:center;color:var(--text-dim);font-size:13.5px}
+        .switch a{color:var(--red);font-weight:700;letter-spacing:.02em;margin-left:4px;transition:color .2s}
+        .switch a:hover{color:var(--red-soft)}
+
+        /* force-logout ghost button (shown only if needed) */
+        .ghost-action{margin-top:16px;text-align:center}
+        .ghost-btn{background:transparent;border:1px solid var(--line-strong);color:var(--text-mute);font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;padding:9px 14px;border-radius:var(--radius-pill);cursor:pointer;transition:color .2s,border-color .2s}
+        .ghost-btn:hover{color:var(--text);border-color:var(--text-mute)}
+
+        /* FOOTER */
+        footer{position:relative;z-index:1;max-width:1200px;margin:0 auto;width:100%;padding:24px 40px 36px;border-top:1px solid var(--line);color:var(--text-mute);font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase}
+
+        /* RESPONSIVE */
+        @media (max-width:980px){
+            .auth-container{grid-template-columns:1fr;gap:48px;padding:40px 24px 60px}
+            .auth-card{justify-self:stretch;max-width:none}
+            .hero-h{font-size:64px}
+            .tiles{max-width:none}
+        }
+        @media (max-width:520px){
+            .topbar{padding:14px 20px}
+            .auth-card{padding:30px 22px}
+            .auth-card h1{font-size:32px}
+            .tiles{grid-template-columns:1fr 1fr}
+            footer{padding:20px}
+        }
+    </style>
 </head>
 
 <body>
 
     <!-- NAVBAR -->
     <header class="topbar">
-        <div class="brand">Neighborhood Safety</div>
+        <div class="brand">SAFE NET</div>
         <nav id="topNav" class="nav-links"></nav>
     </header>
 
     <!-- MAIN -->
     <main class="auth-container">
+
+        <!-- LEFT: HERO -->
+        <aside class="hero-side">
+            <span class="hero-pill">LIVE &middot; SECURE LOGIN</span>
+            <h1 class="hero-h">
+                WATCH.<br>
+                <span class="accent">PROTECT.</span>
+            </h1>
+            <p class="hero-p">
+                Log in to the neighborhood command line. Get verified alerts, broadcast
+                threats to your block, and coordinate with on-duty moderators in real time.
+            </p>
+
+            <div class="tiles">
+                <div class="tile">
+                    <i class="fa-solid fa-bolt"></i>
+                    <div class="tile-label">Avg. Response</div>
+                    <div class="tile-value">&lt; 90s</div>
+                </div>
+                <div class="tile">
+                    <i class="fa-solid fa-users"></i>
+                    <div class="tile-label">Active Neighbors</div>
+                    <div class="tile-value">12.4k</div>
+                </div>
+                <div class="tile">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <div class="tile-label">Encrypted</div>
+                    <div class="tile-value">AES-256</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- RIGHT: LOGIN CARD -->
         <section class="auth-card">
 
-            <h1>Welcome Back 👋</h1>
+            <span class="kicker">
+                <i class="fa-solid fa-lock"></i>
+                SECURE ACCESS
+            </span>
+
+            <h1>Welcome Back</h1>
             <p class="muted">
                 Login to access your dashboard and report incidents.
             </p>
@@ -35,7 +234,7 @@
                 <!-- EMAIL -->
                 <div class="form-field">
                     <label>Email</label>
-                    <input type="email" name="email" placeholder="Enter your email" required />
+                    <input type="email" name="email" placeholder="you@neighborhood.io" required />
                 </div>
 
                 <!-- PASSWORD -->
@@ -43,23 +242,39 @@
                     <label>Password</label>
                     <div class="password-wrapper">
                         <input type="password" name="password" placeholder="Enter your password" required />
-                        <span class="toggle-password">
+                        <span class="toggle-password" id="togglePassword">
                             <i class="fa-solid fa-eye"></i>
                         </span>
                     </div>
                 </div>
 
+                <!-- REMEMBER / FORGOT -->
+                <div class="row-between">
+                    <label class="checkbox">
+                        <input type="checkbox" name="remember" />
+                        <span>Remember me</span>
+                    </label>
+                    <a href="/forgot.html" class="forgot">Forgot password?</a>
+                </div>
+
                 <!-- BUTTON -->
-                <button class="btn gradient full" type="submit">
-                    Login
-                </button>
+                <button class="btn gradient full" type="submit">Login</button>
+
+                <div class="divider">OR</div>
 
                 <!-- SWITCH -->
                 <p class="switch">
-                    Don’t have an account?
+                    Don't have an account?
                     <a href="/register.html">Register</a>
                 </p>
 
+                <!-- force logout (safe: only acts if clicked) -->
+                <div class="ghost-action">
+                    <button type="button" class="ghost-btn" id="forceLogoutBtn">
+                        <i class="fa-solid fa-arrow-rotate-left" style="margin-right:6px"></i>
+                        Clear session &amp; reload
+                    </button>
+                </div>
 
             </form>
         </section>
@@ -67,7 +282,7 @@
 
     <!-- FOOTER -->
     <footer>
-        <small>&copy; <span id="year"></span> Neighborhood Safety System</small>
+        <small>SAFE NET &copy; <span id="year"></span> &middot; Neighborhood Safety System</small>
     </footer>
 
     <!-- JS -->
@@ -78,15 +293,31 @@
     <script>
         document.getElementById("year").textContent = new Date().getFullYear();
 
-        // Force Logout Button Logic
-        document.getElementById("forceLogoutBtn").onclick = function () {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            if (window.APP && window.APP.showToast) {
-                window.APP.showToast('Auth info cleared. Please login again.', 'success');
-            }
-            setTimeout(() => window.location.reload(), 500);
-        };
+        // Password show/hide toggle
+        (function () {
+            const t = document.getElementById("togglePassword");
+            const inp = document.querySelector('input[name="password"]');
+            if (!t || !inp) return;
+            t.addEventListener("click", () => {
+                const showing = inp.type === "text";
+                inp.type = showing ? "password" : "text";
+                t.querySelector("i").className = showing ? "fa-solid fa-eye" : "fa-solid fa-eye-slash";
+            });
+        })();
+
+        // Force Logout Button (null-guarded — fixes your original bug)
+        (function () {
+            const btn = document.getElementById("forceLogoutBtn");
+            if (!btn) return;
+            btn.onclick = function () {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                if (window.APP && window.APP.showToast) {
+                    window.APP.showToast('Auth info cleared. Please login again.', 'success');
+                }
+                setTimeout(() => window.location.reload(), 500);
+            };
+        })();
     </script>
 
 </body>

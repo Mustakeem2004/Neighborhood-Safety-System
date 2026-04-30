@@ -4,70 +4,284 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel | Neighborhood Safety</title>
+    <title>Admin Panel | SAFE NET</title>
 
-    <link rel="stylesheet" href="/css/styles.css">
-
-    <!-- Chart.js -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root{
+            --bg-0:#0b0b0d;--bg-1:#111115;--bg-2:#16161c;--bg-3:#1c1c24;
+            --line:rgba(255,255,255,.07);--line-strong:rgba(255,255,255,.14);
+            --text:#f2f2f4;--text-dim:#b7b7be;--text-mute:#7a7a83;
+            --red:#ff4a4a;--red-soft:#ff6b6b;--teal:#00c48c;--amber:#f7b733;--ghost:#8a8a93;
+            --radius-md:14px;--radius-lg:22px;--radius-pill:999px;
+            --shadow-1:0 1px 0 rgba(255,255,255,.03) inset,0 10px 30px rgba(0,0,0,.45);
+        }
+        *,*::before,*::after{box-sizing:border-box}
+        html,body{margin:0;padding:0;background:var(--bg-0);color:var(--text);font-family:"Archivo",Arial,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh}
+        body{background:radial-gradient(1200px 600px at 85% -10%,rgba(255,74,74,.10),transparent 60%),radial-gradient(900px 500px at -10% 20%,rgba(0,196,140,.06),transparent 60%),var(--bg-0)}
+        a{color:inherit;text-decoration:none}
+        ::selection{background:var(--red);color:#fff}
+
+        /* TOPBAR */
+        .topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px 40px;background:rgba(11,11,13,.75);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+        .brand{display:inline-flex;align-items:center;gap:12px;font-family:"Anton",sans-serif;font-size:22px;letter-spacing:.08em;text-transform:uppercase;position:relative}
+        .brand::before{content:"";width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#1a1a22,#0e0e13);border:1px solid var(--line-strong);display:inline-block}
+        .brand::after{content:"";position:absolute;left:12px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:var(--red);box-shadow:0 0 0 3px rgba(255,74,74,.18),0 0 14px rgba(255,74,74,.55);animation:pulse 1.8s ease-in-out infinite}
+        @keyframes pulse{0%,100%{transform:translateY(-50%) scale(1);opacity:1}50%{transform:translateY(-50%) scale(1.15);opacity:.75}}
+
+        .nav-links{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+        .nav-links a,.nav-links button,.nav-links span{display:inline-flex;align-items:center;padding:9px 16px;border-radius:var(--radius-pill);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);background:transparent;border:1px solid transparent;cursor:pointer;transition:color .2s,background-color .2s,transform .2s}
+        .nav-links a:hover,.nav-links button:hover{color:var(--text);background:rgba(255,255,255,.04)}
+        .nav-links a.active,.nav-links .active{background:var(--teal);color:#07110c}
+        .nav-links .logout,.nav-links a[href*="logout"]{background:var(--red);color:#fff}
+        .nav-links .logout:hover,.nav-links a[href*="logout"]:hover{background:var(--red-soft);transform:translateY(-1px)}
+
+        /* MAIN */
+        .container{max-width:1320px;margin:0 auto;padding:48px 40px 80px;display:flex;flex-direction:column;gap:32px}
+
+        /* HERO */
+        .hero{padding:24px 0 8px}
+        .hero-meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-mute)}
+        .live-pill{display:inline-flex;align-items:center;gap:10px;padding:7px 14px;border:1px solid rgba(255,74,74,.45);border-radius:var(--radius-pill);color:var(--red);background:rgba(255,74,74,.05);font-weight:600}
+        .live-dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 3px rgba(255,74,74,.18);animation:pulse2 1.6s ease-in-out infinite}
+        .live-dot--sm{width:6px;height:6px}
+        @keyframes pulse2{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:.75}}
+        .hero-crumb{opacity:.6}
+        .hero-title{font-family:"Anton",sans-serif;font-weight:400;font-size:clamp(64px,11vw,148px);line-height:.88;letter-spacing:-.01em;text-transform:uppercase;margin:0 0 24px;color:var(--text)}
+        .hero-title-accent{color:var(--red);display:inline-block}
+        .hero-sub{max-width:620px;color:var(--text-dim);font-size:16px;line-height:1.6;margin:0}
+
+        /* STAT GRID */
+        .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+        .stat-card{position:relative;padding:22px;border-radius:var(--radius-md);background:linear-gradient(180deg,var(--bg-2),var(--bg-1));border:1px solid var(--line);overflow:hidden;transition:transform .25s,border-color .25s}
+        .stat-card:hover{transform:translateY(-2px);border-color:var(--line-strong)}
+        .stat-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent,var(--red))}
+        .stat-card--red{--accent:var(--red)}
+        .stat-card--teal{--accent:var(--teal)}
+        .stat-card--amber{--accent:var(--amber)}
+        .stat-card--ghost{--accent:var(--ghost)}
+        .stat-label{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-mute);margin-bottom:10px}
+        .stat-value{font-family:"Anton",sans-serif;font-size:52px;line-height:1;margin-bottom:8px;color:var(--text)}
+        .stat-card--red .stat-value{color:var(--red)}
+        .stat-card--teal .stat-value{color:var(--teal)}
+        .stat-card--amber .stat-value{color:var(--amber)}
+        .stat-foot{font-size:12px;color:var(--text-mute)}
+
+        /* CARDS / PANELS */
+        .card{background:linear-gradient(180deg,var(--bg-2),var(--bg-1));border:1px solid var(--line);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow-1)}
+        .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
+        .kicker{display:inline-flex;align-items:center;gap:8px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-mute);margin-bottom:6px}
+        .card h1{font-family:"Anton",sans-serif;font-weight:400;font-size:56px;line-height:1;letter-spacing:.02em;text-transform:uppercase;margin:0;color:var(--text)}
+        .card h2{font-family:"Anton",sans-serif;font-weight:400;font-size:26px;letter-spacing:.04em;text-transform:uppercase;margin:0;color:var(--text)}
+        .tag{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-mute);padding:6px 10px;border:1px solid var(--line-strong);border-radius:var(--radius-pill);white-space:nowrap}
+
+        /* SPLIT ROW */
+        .split-row{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}
+        .chart-wrap{height:300px;padding-top:6px}
+
+        /* FEED */
+        .feed-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;max-height:320px;overflow-y:auto}
+        .feed-item{display:flex;gap:14px;padding:14px 16px;border-radius:var(--radius-md);background:var(--bg-3);border:1px solid var(--line);transition:transform .2s,border-color .2s}
+        .feed-item:hover{transform:translateX(2px);border-color:var(--line-strong)}
+        .feed-bar{width:3px;border-radius:3px;background:var(--ghost);flex-shrink:0}
+        .feed-item--red .feed-bar{background:var(--red);box-shadow:0 0 12px rgba(255,74,74,.4)}
+        .feed-item--amber .feed-bar{background:var(--amber)}
+        .feed-body{flex:1;min-width:0}
+        .feed-top{display:flex;justify-content:space-between;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-mute);margin-bottom:4px}
+        .feed-title{font-family:"Anton",sans-serif;font-size:17px;letter-spacing:.04em;text-transform:uppercase;color:var(--text);margin-bottom:2px}
+        .feed-loc{font-size:12px;color:var(--text-mute)}
+        .feed-list::-webkit-scrollbar{width:6px}
+        .feed-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:10px}
+
+        /* TABLES */
+        .table-wrap{border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden;background:var(--bg-3)}
+        table{width:100%;border-collapse:collapse;font-size:14px}
+        thead th{text-align:left;padding:14px 18px;font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-mute);background:rgba(255,255,255,.02);border-bottom:1px solid var(--line);font-weight:600}
+        tbody td{padding:16px 18px;border-bottom:1px solid var(--line);color:var(--text);vertical-align:middle}
+        tbody tr:last-child td{border-bottom:none}
+        tbody tr{transition:background-color .2s}
+        tbody tr:hover{background:rgba(255,255,255,.025)}
+        .ta-right{text-align:right}
+
+        /* PILLS (wrap values in admin.js with <span class="pill pill--teal">Approved</span> etc.) */
+        .pill{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:var(--radius-pill);font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;background:rgba(255,255,255,.05);border:1px solid var(--line-strong);color:var(--text-dim)}
+        .pill--red{background:rgba(255,74,74,.10);color:var(--red);border-color:rgba(255,74,74,.35)}
+        .pill--teal{background:rgba(0,196,140,.10);color:var(--teal);border-color:rgba(0,196,140,.35)}
+        .pill--amber{background:rgba(247,183,51,.10);color:var(--amber);border-color:rgba(247,183,51,.35)}
+
+        /* BUTTONS + SELECT used by admin.js actions */
+        button,.btn{font-family:"Archivo",sans-serif;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:9px 16px;border-radius:var(--radius-pill);border:1px solid transparent;background:var(--bg-3);color:var(--text);cursor:pointer;transition:background-color .2s,color .2s,transform .2s}
+        button+button,.btn+.btn{margin-left:6px}
+        button:hover{transform:translateY(-1px)}
+        button[onclick*="approve"],button.approve{background:var(--teal);color:#07110c}
+        button[onclick*="approve"]:hover,button.approve:hover{background:#00e0a0}
+        button[onclick*="delete"],button[onclick*="remove"],button.delete{background:var(--red);color:#fff}
+        button[onclick*="delete"]:hover,button[onclick*="remove"]:hover,button.delete:hover{background:var(--red-soft)}
+        select{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:8px 12px;border-radius:var(--radius-pill);background:var(--bg-2);color:var(--text);border:1px solid var(--line-strong);cursor:pointer}
+        select:focus{outline:none;border-color:var(--red)}
+
+        /* FOOTER */
+        footer{max-width:1320px;margin:0 auto;padding:24px 40px 40px;border-top:1px solid var(--line);color:var(--text-mute);font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;gap:16px}
+
+        /* RESPONSIVE */
+        @media (max-width:1080px){.stat-grid{grid-template-columns:repeat(2,1fr)}.split-row{grid-template-columns:1fr}}
+        @media (max-width:720px){
+            .topbar{padding:14px 20px}
+            .container{padding:28px 20px 60px;gap:24px}
+            .card{padding:20px 16px;border-radius:18px}
+            .card h1{font-size:48px}
+            .card h2{font-size:22px}
+            .stat-value{font-size:42px}
+            footer{padding:20px;flex-direction:column;align-items:flex-start}
+            thead{display:none}
+            table,tbody,tr,td{display:block;width:100%}
+            tbody tr{background:var(--bg-3);border:1px solid var(--line);border-radius:var(--radius-md);margin-bottom:10px;padding:4px 0}
+            tbody td{border:none;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+            tbody td::before{content:attr(data-label);font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-mute)}
+        }
+        @media (max-width:480px){.stat-grid{grid-template-columns:1fr}.hero-title{font-size:68px}}
+    </style>
 </head>
 
 <body>
 
 <header class="topbar">
-    <div class="brand">Neighborhood Safety</div>
+    <div class="brand">SAFE NET</div>
     <nav id="topNav" class="nav-links"></nav>
 </header>
 
 <main class="container">
 
-    <!-- TITLE -->
-    <section class="card">
-        <h1>Admin Panel</h1>
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-meta">
+            <span class="live-pill">
+                <span class="live-dot"></span>
+                LIVE &middot; ADMIN CONSOLE
+            </span>
+            <span class="hero-crumb">HQ / CONTROL / OVERVIEW</span>
+        </div>
+        <h1 class="hero-title">
+            ADMIN<br>
+            <span class="hero-title-accent">PANEL.</span>
+        </h1>
+        <p class="hero-sub">
+            Approve residents. Triage incidents. Keep the neighborhood one step ahead &mdash;
+            every decision you make ships in real time to the field.
+        </p>
+    </section>
+
+    <!-- STAT CARDS -->
+    <section class="stat-grid">
+        <article class="stat-card stat-card--red">
+            <div class="stat-label">Pending Approvals</div>
+            <div class="stat-value" id="statPending">00</div>
+            <div class="stat-foot">Awaiting review</div>
+        </article>
+        <article class="stat-card stat-card--teal">
+            <div class="stat-label">Active Users</div>
+            <div class="stat-value" id="statUsers">00</div>
+            <div class="stat-foot">Verified residents</div>
+        </article>
+        <article class="stat-card stat-card--amber">
+            <div class="stat-label">Open Incidents</div>
+            <div class="stat-value" id="statOpen">00</div>
+            <div class="stat-foot">Needs dispatch</div>
+        </article>
+        <article class="stat-card stat-card--ghost">
+            <div class="stat-label">Resolved (24h)</div>
+            <div class="stat-value" id="statResolved">00</div>
+            <div class="stat-foot">Last 24 hours</div>
+        </article>
+    </section>
+
+    <!-- CHART + FEED -->
+    <section class="split-row">
+        <article class="card">
+            <header class="card-head">
+                <div>
+                    <span class="kicker">ANALYTICS</span>
+                    <h2>Incidents &mdash; last 7 days</h2>
+                </div>
+                <span class="tag">AUTO-REFRESH</span>
+            </header>
+            <div class="chart-wrap"><canvas id="incidentChart"></canvas></div>
+        </article>
+
+        <article class="card">
+            <header class="card-head">
+                <div>
+                    <span class="kicker"><span class="live-dot live-dot--sm"></span> LIVE DISPATCH</span>
+                    <h2>Latest signals</h2>
+                </div>
+                <span class="tag">REALTIME</span>
+            </header>
+            <ul class="feed-list" id="feedList"></ul>
+        </article>
     </section>
 
     <!-- USERS -->
     <section class="card">
-        <h2>Users</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Address</th>
-                    <th>Role</th>
-                    <th>Approved</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="userTableBody"></tbody>
-        </table>
+        <header class="card-head">
+            <div>
+                <span class="kicker">COMMUNITY</span>
+                <h2>Users</h2>
+            </div>
+            <span class="tag" id="userCountTag">0 TOTAL</span>
+        </header>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                        <th>Role</th>
+                        <th>Approved</th>
+                        <th class="ta-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody"></tbody>
+            </table>
+        </div>
     </section>
 
     <!-- INCIDENTS -->
     <section class="card">
-        <h2>Incidents</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Type</th>
-                    <th>Status</th>
-                    <th>Location</th>
-                    <th>User</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="incidentTableBody"></tbody>
-        </table>
+        <header class="card-head">
+            <div>
+                <span class="kicker">FIELD</span>
+                <h2>Incidents</h2>
+            </div>
+            <span class="tag" id="incidentCountTag">0 TOTAL</span>
+        </header>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Location</th>
+                        <th>User</th>
+                        <th class="ta-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="incidentTableBody"></tbody>
+            </table>
+        </div>
     </section>
-
-
 
 </main>
 
 <footer>
-    <small>&copy; <span id="year"></span></small>
+    <span>SAFE NET &copy; <span id="year"></span></span>
+    <span>Neighborhood Safety Operations &middot; v1.0</span>
 </footer>
 
 <!-- JS -->
@@ -77,18 +291,92 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const user = window.API.getUser();
+    const user = window.API && window.API.getUser ? window.API.getUser() : null;
+    if (!user) { window.location.href = "/login.html"; return; }
+    if (user.role !== "admin") { window.location.href = "/dashboard.html"; return; }
 
-  if (!user) {
-    window.location.href = "/login.html";
-    return;
-  }
+    document.getElementById("year").textContent = new Date().getFullYear();
 
-  if (user.role !== "admin") {
-    window.location.href = "/dashboard.html";
-  }
+    // Auto-sync stat cards with whatever admin.js renders in the tables
+    const recomputeStats = () => {
+        const userRows = document.querySelectorAll("#userTableBody tr");
+        const incRows  = document.querySelectorAll("#incidentTableBody tr");
+        let pending = 0, approved = 0;
+        userRows.forEach(tr => {
+            const t = (tr.textContent || "").toLowerCase();
+            if (t.includes("pending") || t.includes(" no") || t.includes("false")) pending++; else approved++;
+        });
+        let open = 0, resolved = 0;
+        incRows.forEach(tr => {
+            const t = (tr.textContent || "").toLowerCase();
+            if (t.includes("resolved") || t.includes("closed")) resolved++; else open++;
+        });
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v).padStart(2, "0"); };
+        set("statPending", pending); set("statUsers", approved); set("statOpen", open); set("statResolved", resolved);
+        const uTag = document.getElementById("userCountTag");
+        const iTag = document.getElementById("incidentCountTag");
+        if (uTag) uTag.textContent = userRows.length + " TOTAL";
+        if (iTag) iTag.textContent = incRows.length + " TOTAL";
+    };
+    const mo = new MutationObserver(recomputeStats);
+    const uBody = document.getElementById("userTableBody");
+    const iBody = document.getElementById("incidentTableBody");
+    if (uBody) mo.observe(uBody, { childList: true, subtree: true });
+    if (iBody) mo.observe(iBody, { childList: true, subtree: true });
+    setTimeout(recomputeStats, 600);
 
-  document.getElementById("year").textContent = new Date().getFullYear();
+    // Demo live feed (only shows if admin.js did not populate #feedList)
+    setTimeout(() => {
+        const feed = document.getElementById("feedList");
+        if (feed && feed.children.length === 0) {
+            const demo = [
+                { id: "INC-2418", title: "Suspicious Activity", loc: "Maple Ave · 0.4 mi", ago: "2m ago",  sev: "red"   },
+                { id: "INC-2417", title: "Vehicle Break-in",    loc: "5th & Oak · 0.9 mi", ago: "11m ago", sev: "red"   },
+                { id: "INC-2416", title: "Loitering Group",     loc: "Park Plaza · 1.2 mi",ago: "23m ago", sev: "amber" },
+                { id: "INC-2415", title: "Loud Disturbance",    loc: "Birch Rd · 0.7 mi",  ago: "38m ago", sev: "ghost" },
+                { id: "INC-2414", title: "Package Theft",       loc: "Elm St · 1.5 mi",    ago: "1h ago",  sev: "amber" }
+            ];
+            feed.innerHTML = demo.map(d => `
+                <li class="feed-item feed-item--${d.sev}">
+                    <span class="feed-bar"></span>
+                    <div class="feed-body">
+                        <div class="feed-top"><span>${d.id}</span><span>${d.ago}</span></div>
+                        <div class="feed-title">${d.title}</div>
+                        <div class="feed-loc">${d.loc}</div>
+                    </div>
+                </li>`).join("");
+        }
+    }, 700);
+
+    // 7-day incidents chart
+    const ctx = document.getElementById("incidentChart");
+    if (ctx && window.Chart) {
+        const g = ctx.getContext("2d").createLinearGradient(0, 0, 0, 260);
+        g.addColorStop(0, "rgba(255,74,74,0.55)");
+        g.addColorStop(1, "rgba(255,74,74,0.02)");
+        new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: ["MON","TUE","WED","THU","FRI","SAT","SUN"],
+                datasets: [{
+                    label: "Incidents",
+                    data: [4, 7, 3, 9, 6, 12, 8],
+                    fill: true, backgroundColor: g, borderColor: "#ff4a4a",
+                    borderWidth: 2, tension: 0.35,
+                    pointBackgroundColor: "#ff4a4a", pointBorderColor: "#0b0b0d",
+                    pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { color: "rgba(255,255,255,0.04)" }, ticks: { color: "#8a8a93", font: { family: "'JetBrains Mono',monospace", size: 10 } } },
+                    y: { grid: { color: "rgba(255,255,255,0.04)" }, ticks: { color: "#8a8a93", font: { family: "'JetBrains Mono',monospace", size: 10 } }, beginAtZero: true }
+                }
+            }
+        });
+    }
 });
 </script>
 

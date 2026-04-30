@@ -4,18 +4,169 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>Register | Neighborhood Safety</title>
-
-    <!-- SEO -->
+    <title>Register | SAFE NET</title>
     <meta name="description" content="Create an account to report incidents and improve neighborhood safety." />
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-    <!-- ICONS -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root{
+            --bg-0:#0b0b0d;--bg-1:#111115;--bg-2:#16161c;--bg-3:#1c1c24;
+            --line:rgba(255,255,255,.07);--line-strong:rgba(255,255,255,.14);
+            --text:#f2f2f4;--text-dim:#b7b7be;--text-mute:#7a7a83;
+            --red:#ff4a4a;--red-soft:#ff6b6b;--teal:#00c48c;--amber:#f7b733;
+            --radius-md:14px;--radius-lg:22px;--radius-pill:999px;
+            --shadow-1:0 1px 0 rgba(255,255,255,.03) inset,0 10px 30px rgba(0,0,0,.45);
+            --shadow-red:0 0 0 1px rgba(255,74,74,.35),0 12px 40px rgba(255,74,74,.22);
+        }
+        *,*::before,*::after{box-sizing:border-box}
+        html,body{margin:0;padding:0;background:var(--bg-0);color:var(--text);font-family:"Archivo",Arial,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh}
+        body{
+            position:relative;display:flex;flex-direction:column;
+            background:
+                radial-gradient(1100px 600px at 85% -10%,rgba(255,74,74,.12),transparent 60%),
+                radial-gradient(900px 500px at -10% 80%,rgba(0,196,140,.06),transparent 60%),
+                var(--bg-0);
+        }
+        body::before{
+            content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.35;
+            background-image:
+                linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+                linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+            background-size:64px 64px;
+            mask-image:radial-gradient(ellipse at center,#000 40%,transparent 75%);
+            -webkit-mask-image:radial-gradient(ellipse at center,#000 40%,transparent 75%);
+        }
+        a{color:inherit;text-decoration:none}
+        ::selection{background:var(--red);color:#fff}
+        @keyframes pulse{0%,100%{transform:translateY(-50%) scale(1);opacity:1}50%{transform:translateY(-50%) scale(1.15);opacity:.75}}
+        @keyframes pulse2{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:.75}}
+
+        /* TOPBAR */
+        .topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px 40px;background:rgba(11,11,13,.75);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+        .brand{display:inline-flex;align-items:center;gap:12px;font-family:"Anton",sans-serif;font-size:22px;letter-spacing:.08em;text-transform:uppercase;position:relative}
+        .brand > i{display:none} /* hide the original shield icon (we use the SAFE NET mark instead) */
+        .brand::before{content:"";width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#1a1a22,#0e0e13);border:1px solid var(--line-strong);display:inline-block}
+        .brand::after{content:"";position:absolute;left:12px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:var(--red);box-shadow:0 0 0 3px rgba(255,74,74,.18),0 0 14px rgba(255,74,74,.55);animation:pulse 1.8s ease-in-out infinite}
+        .nav-links{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+        .nav-links a,.nav-links button,.nav-links span{display:inline-flex;align-items:center;padding:9px 16px;border-radius:var(--radius-pill);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);background:transparent;border:1px solid transparent;cursor:pointer;transition:color .2s,background-color .2s,transform .2s}
+        .nav-links a:hover,.nav-links button:hover{color:var(--text);background:rgba(255,255,255,.04)}
+        .nav-links a.active,.nav-links .active{background:var(--teal);color:#07110c}
+        .nav-links .logout,.nav-links a[href*="logout"]{background:var(--red);color:#fff}
+
+        /* LAYOUT */
+        .auth-container{
+            position:relative;z-index:1;flex:1;max-width:1200px;width:100%;margin:0 auto;
+            padding:56px 40px 80px;
+            display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
+        }
+
+        /* LEFT HERO */
+        .hero-side{position:relative}
+        .hero-pill{display:inline-flex;align-items:center;gap:10px;padding:7px 14px;margin-bottom:28px;border:1px solid rgba(255,74,74,.45);border-radius:var(--radius-pill);color:var(--red);background:rgba(255,74,74,.05);font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+        .hero-pill::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 3px rgba(255,74,74,.18);animation:pulse2 1.6s ease-in-out infinite}
+        .hero-h{font-family:"Anton",sans-serif;font-weight:400;font-size:clamp(56px,7vw,112px);line-height:.88;letter-spacing:-.01em;text-transform:uppercase;margin:0 0 28px;color:var(--text)}
+        .hero-h .accent{color:var(--red)}
+        .hero-p{max-width:480px;color:var(--text-dim);font-size:16px;line-height:1.65;margin:0 0 36px}
+
+        /* benefit list */
+        .benefits{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;max-width:520px}
+        .benefit{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;border-radius:var(--radius-md);background:linear-gradient(180deg,var(--bg-2),var(--bg-1));border:1px solid var(--line);transition:transform .2s,border-color .2s}
+        .benefit:hover{transform:translateX(2px);border-color:var(--line-strong)}
+        .benefit-ico{flex-shrink:0;width:36px;height:36px;border-radius:10px;background:var(--bg-3);border:1px solid var(--line-strong);display:inline-flex;align-items:center;justify-content:center;color:var(--red);font-size:14px}
+        .benefit-body h4{margin:0 0 2px;font-family:"Anton",sans-serif;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--text)}
+        .benefit-body p{margin:0;font-size:13px;color:var(--text-mute)}
+
+        /* RIGHT CARD */
+        .auth-card{
+            position:relative;
+            background:linear-gradient(180deg,var(--bg-2),var(--bg-1));
+            border:1px solid var(--line);
+            border-radius:var(--radius-lg);
+            padding:44px 40px 36px;
+            box-shadow:var(--shadow-1);
+            overflow:hidden;
+            max-width:520px;
+            justify-self:end;
+            width:100%;
+        }
+        .auth-card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,var(--red),transparent 70%)}
+
+        .kicker{display:inline-flex;align-items:center;gap:8px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-mute);margin-bottom:12px}
+        .kicker i{color:var(--red)}
+        .auth-card h1{font-family:"Anton",sans-serif;font-weight:400;font-size:44px;line-height:1;letter-spacing:.02em;text-transform:uppercase;margin:0 0 12px;color:var(--text)}
+        .muted{color:var(--text-dim);font-size:14.5px;margin:0 0 32px;display:flex;align-items:flex-start;gap:8px}
+        .muted i{color:var(--amber);margin-top:4px;font-size:12px}
+
+        /* FORM */
+        .auth-form{display:flex;flex-direction:column;gap:22px}
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+        .form-field{display:flex;flex-direction:column;gap:8px}
+        .form-field.full-row{grid-column:1 / -1}
+        .form-field label{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-mute);font-weight:600}
+        .form-field input{width:100%;padding:14px 16px;background:var(--bg-3);color:var(--text);border:1px solid var(--line);border-radius:var(--radius-md);font-family:"Archivo",sans-serif;font-size:14.5px;transition:border-color .2s,background-color .2s,box-shadow .2s;outline:none}
+        .form-field input::placeholder{color:var(--text-mute)}
+        .form-field input:hover{border-color:var(--line-strong)}
+        .form-field input:focus{border-color:var(--red);background:#1e1e26;box-shadow:0 0 0 4px rgba(255,74,74,.10)}
+
+        /* password */
+        .password-wrapper{position:relative}
+        .password-wrapper input{padding-right:48px}
+        .toggle-password{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-mute);cursor:pointer;padding:6px;transition:color .2s}
+        .toggle-password:hover{color:var(--red)}
+
+        /* password strength */
+        .strength{display:flex;gap:4px;margin-top:6px}
+        .strength span{flex:1;height:3px;border-radius:3px;background:var(--line);transition:background-color .3s}
+        .strength.s1 span:nth-child(-n+1){background:var(--red)}
+        .strength.s2 span:nth-child(-n+2){background:var(--amber)}
+        .strength.s3 span:nth-child(-n+3){background:var(--teal)}
+        .strength.s4 span{background:var(--teal)}
+        .strength-label{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-mute);margin-top:6px}
+
+        /* terms */
+        .terms{display:flex;align-items:flex-start;gap:10px;color:var(--text-dim);font-size:13px;cursor:pointer;user-select:none;line-height:1.5}
+        .terms input{flex-shrink:0;appearance:none;-webkit-appearance:none;width:16px;height:16px;margin-top:2px;border-radius:4px;border:1px solid var(--line-strong);background:var(--bg-3);cursor:pointer;position:relative;transition:background-color .2s,border-color .2s}
+        .terms input:checked{background:var(--red);border-color:var(--red)}
+        .terms input:checked::after{content:"\2713";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700}
+        .terms a{color:var(--red);font-weight:600;transition:color .2s}
+        .terms a:hover{color:var(--red-soft)}
+
+        /* button */
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:"Archivo",sans-serif;font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:16px 28px;border-radius:var(--radius-pill);border:1px solid transparent;background:var(--bg-3);color:var(--text);cursor:pointer;transition:transform .2s,background-color .2s,box-shadow .2s}
+        .btn.full{width:100%}
+        .btn.gradient{background:var(--red);color:#fff;box-shadow:var(--shadow-red);margin-top:4px}
+        .btn.gradient::before{content:"\f4fe";font-family:"Font Awesome 6 Free";font-weight:900;font-size:12px}
+        .btn.gradient:hover{background:var(--red-soft);transform:translateY(-2px);box-shadow:0 0 0 1px rgba(255,74,74,.5),0 18px 48px rgba(255,74,74,.32)}
+
+        /* divider + switch */
+        .divider{display:flex;align-items:center;gap:12px;margin:16px 0 6px;color:var(--text-mute);font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase}
+        .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+        .switch{margin:6px 0 0;text-align:center;color:var(--text-dim);font-size:13.5px}
+        .switch a{color:var(--red);font-weight:700;margin-left:4px;transition:color .2s}
+        .switch a:hover{color:var(--red-soft)}
+
+        /* FOOTER */
+        footer{position:relative;z-index:1;max-width:1200px;margin:0 auto;width:100%;padding:24px 40px 36px;border-top:1px solid var(--line);color:var(--text-mute);font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase}
+
+        /* RESPONSIVE */
+        @media (max-width:980px){
+            .auth-container{grid-template-columns:1fr;gap:48px;padding:40px 24px 60px}
+            .auth-card{justify-self:stretch;max-width:none}
+            .hero-h{font-size:64px}
+            .benefits{max-width:none}
+        }
+        @media (max-width:620px){
+            .topbar{padding:14px 20px}
+            .auth-card{padding:30px 22px}
+            .auth-card h1{font-size:32px}
+            .form-grid{grid-template-columns:1fr}
+            footer{padding:20px}
+        }
+    </style>
 </head>
 
 <body>
@@ -24,18 +175,63 @@
     <header class="topbar">
         <div class="brand">
             <i class="fa-solid fa-shield-halved"></i>
-            Neighborhood Safety
+            SAFE NET
         </div>
         <nav id="topNav" class="nav-links"></nav>
     </header>
 
     <!-- MAIN -->
     <main class="auth-container">
+
+        <!-- LEFT: HERO -->
+        <aside class="hero-side">
+            <span class="hero-pill">JOIN THE NET &middot; FREE FOREVER</span>
+            <h1 class="hero-h">
+                STRONGER<br>
+                <span class="accent">TOGETHER.</span>
+            </h1>
+            <p class="hero-p">
+                Create your SAFE NET account in under 30 seconds. After a quick admin
+                review, you'll be live on the neighborhood command line.
+            </p>
+
+            <ul class="benefits">
+                <li class="benefit">
+                    <span class="benefit-ico"><i class="fa-solid fa-tower-broadcast"></i></span>
+                    <div class="benefit-body">
+                        <h4>Instant broadcasts</h4>
+                        <p>Push verified alerts to every verified neighbor in your block.</p>
+                    </div>
+                </li>
+                <li class="benefit">
+                    <span class="benefit-ico"><i class="fa-solid fa-user-shield"></i></span>
+                    <div class="benefit-body">
+                        <h4>Admin verified</h4>
+                        <p>Every account is reviewed so the feed stays trustworthy.</p>
+                    </div>
+                </li>
+                <li class="benefit">
+                    <span class="benefit-ico"><i class="fa-solid fa-map-location-dot"></i></span>
+                    <div class="benefit-body">
+                        <h4>Geo-aware</h4>
+                        <p>Alerts are filtered to your address and walking radius.</p>
+                    </div>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- RIGHT: FORM CARD -->
         <section class="auth-card">
+
+            <span class="kicker">
+                <i class="fa-solid fa-user-plus"></i>
+                NEW ACCOUNT
+            </span>
 
             <h1>Create Account</h1>
             <p class="muted">
-                Your account will be reviewed by an administrator.
+                <i class="fa-solid fa-circle-info"></i>
+                <span>Your account will be reviewed by an administrator before full access is granted.</span>
             </p>
 
             <form id="registerForm" class="auth-form" autocomplete="off">
@@ -45,39 +241,49 @@
                     <!-- NAME -->
                     <div class="form-field">
                         <label for="name">Full Name</label>
-                        <input id="name" type="text" name="name" placeholder="Enter your name" required />
+                        <input id="name" type="text" name="name" placeholder="Jane Doe" required />
                     </div>
 
                     <!-- EMAIL -->
                     <div class="form-field">
                         <label for="email">Email</label>
-                        <input id="email" type="email" name="email" placeholder="Enter your email" required />
+                        <input id="email" type="email" name="email" placeholder="jane@neighborhood.io" required />
                     </div>
 
                     <!-- PASSWORD -->
-                    <div class="form-field password-field">
+                    <div class="form-field password-field full-row">
                         <label for="password">Password</label>
                         <div class="password-wrapper">
                             <input id="password" type="password" name="password" minlength="6"
-                                placeholder="Create password" required />
-                            <span class="toggle-password" aria-label="Toggle password visibility">
+                                placeholder="At least 6 characters" required />
+                            <span class="toggle-password" id="togglePassword" aria-label="Toggle password visibility">
                                 <i class="fa-solid fa-eye"></i>
                             </span>
                         </div>
+                        <div class="strength" id="strengthBar">
+                            <span></span><span></span><span></span><span></span>
+                        </div>
+                        <div class="strength-label" id="strengthLabel">Enter a password</div>
                     </div>
 
                     <!-- ADDRESS -->
-                    <div class="form-field">
+                    <div class="form-field full-row">
                         <label for="address">Address</label>
-                        <input id="address" type="text" name="address" placeholder="Enter your address" required />
+                        <input id="address" type="text" name="address" placeholder="Street, number, city" required />
                     </div>
 
                 </div>
 
+                <!-- TERMS -->
+                <label class="terms">
+                    <input type="checkbox" name="agree" required />
+                    <span>I agree to the <a href="/terms.html">Terms of Service</a> and <a href="/privacy.html">Privacy Policy</a>, and confirm the information provided is accurate.</span>
+                </label>
+
                 <!-- BUTTON -->
-                <button class="btn gradient full" type="submit">
-                    Create Account
-                </button>
+                <button class="btn gradient full" type="submit">Create Account</button>
+
+                <div class="divider">OR</div>
 
                 <!-- SWITCH -->
                 <p class="switch">
@@ -92,13 +298,53 @@
 
     <!-- FOOTER -->
     <footer>
-        <small>&copy; <span id="year"></span> Neighborhood Safety System</small>
+        <small>SAFE NET &copy; <span id="year"></span> &middot; Neighborhood Safety System</small>
     </footer>
 
     <!-- JS -->
     <script src="/js/api.js"></script>
     <script src="/js/common.js"></script>
     <script src="/js/auth.js"></script>
+
+    <script>
+        document.getElementById("year").textContent = new Date().getFullYear();
+
+        // Password show/hide
+        (function () {
+            const t   = document.getElementById("togglePassword");
+            const inp = document.getElementById("password");
+            if (!t || !inp) return;
+            t.addEventListener("click", () => {
+                const showing = inp.type === "text";
+                inp.type = showing ? "password" : "text";
+                t.querySelector("i").className = showing ? "fa-solid fa-eye" : "fa-solid fa-eye-slash";
+            });
+        })();
+
+        // Password strength meter
+        (function () {
+            const inp   = document.getElementById("password");
+            const bar   = document.getElementById("strengthBar");
+            const label = document.getElementById("strengthLabel");
+            if (!inp || !bar || !label) return;
+
+            const score = v => {
+                let s = 0;
+                if (v.length >= 6)  s++;
+                if (v.length >= 10) s++;
+                if (/[A-Z]/.test(v) && /[a-z]/.test(v)) s++;
+                if (/\d/.test(v) && /[^A-Za-z0-9]/.test(v)) s++;
+                return s;
+            };
+            const labels = ["Enter a password","Weak","Okay","Strong","Excellent"];
+
+            inp.addEventListener("input", () => {
+                const s = inp.value ? score(inp.value) : 0;
+                bar.className = "strength" + (s ? " s" + s : "");
+                label.textContent = labels[s];
+            });
+        })();
+    </script>
 
 </body>
 

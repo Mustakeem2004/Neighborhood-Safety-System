@@ -1,108 +1,363 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About | Neighborhood Safety</title>
-    <link rel="stylesheet" href="/css/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About | SafeNet</title>
+
+  <link rel="stylesheet" href="/css/styles.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#050505; --bg-2:#0A0A0A;
+      --line:rgba(255,255,255,.10); --line-2:rgba(255,255,255,.05);
+      --text:#fff; --muted:#A1A1AA; --dim:#71717A;
+      --red:#FF3B30; --red-2:#FF1A0D;
+      --yellow:#FFCC00; --blue:#3B82F6; --green:#22c55e;
+    }
+    *{box-sizing:border-box;}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+    a{color:inherit;text-decoration:none;}
+    ::selection{background:var(--red);color:#fff;}
+
+    .label{font-family:"IBM Plex Mono",monospace;letter-spacing:.25em;text-transform:uppercase;font-size:10px;color:var(--dim);}
+
+    /* override any conflicting globals from styles.css */
+    .topbar,.container,.nav-links,.brand,.hero,.modern-card,.cards-row,.muted,footer{all:revert;}
+
+    /* HEADER */
+    .topbar{
+      position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+      padding:16px 28px;background:rgba(0,0,0,.85);backdrop-filter:blur(18px);border-bottom:1px solid var(--line);
+    }
+    .brand{display:flex;align-items:center;gap:10px;font-family:"Bebas Neue";font-size:24px;letter-spacing:.12em;color:#fff;}
+    .brand .badge{
+      width:34px;height:34px;background:var(--red);display:flex;align-items:center;justify-content:center;position:relative;
+    }
+    .brand .badge svg{width:16px;height:16px;color:#fff;}
+    .brand .badge::after{content:"";position:absolute;top:-3px;right:-3px;width:8px;height:8px;background:var(--yellow);animation:pulse 1.6s ease-in-out infinite;}
+    .brand .accent{color:var(--red);}
+    .nav-links{display:flex;align-items:center;gap:26px;}
+    .nav-links a, .nav-links button{
+      background:transparent;border:0;cursor:pointer;
+      font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+      color:var(--muted);padding:6px 0;transition:color .2s;position:relative;
+    }
+    .nav-links a:hover, .nav-links button:hover{color:#fff;}
+    .nav-links a::after{content:"";position:absolute;left:0;bottom:-4px;height:1px;width:0;background:var(--red);transition:width .3s;}
+    .nav-links a:hover::after{width:100%;}
+    @media(max-width:768px){.nav-links{display:none;}}
+    @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(255,59,48,.7);}50%{opacity:.5;box-shadow:0 0 0 8px rgba(255,59,48,0);}}
+
+    /* CONTAINER */
+    .container{max-width:1280px;margin:0 auto;padding:48px 28px 80px;}
+
+    /* HERO */
+    .hero{
+      position:relative;padding:80px 0 60px;
+      border-bottom:1px solid var(--line);margin-bottom:48px;
+    }
+    .hero::before{
+      content:"";position:absolute;left:0;top:80px;width:4px;height:80px;background:var(--red);
+    }
+    .hero .label{margin-bottom:18px;display:block;padding-left:24px;}
+    .hero h1{
+      font-family:"Bebas Neue";font-size:clamp(54px,9vw,128px);line-height:.92;letter-spacing:.02em;
+      text-transform:uppercase;color:#fff;margin:0 0 28px;padding-left:24px;
+    }
+    .hero h1 .red{color:var(--red);}
+    .hero p{
+      color:var(--muted);font-size:17px;line-height:1.7;max-width:680px;margin:0;padding-left:24px;
+    }
+
+    /* MISSION — large statement card */
+    .mission{
+      position:relative;border:1px solid var(--line);background:#0A0A0A;
+      padding:48px 40px;display:grid;grid-template-columns:1fr;gap:32px;overflow:hidden;
+    }
+    @media(min-width:900px){.mission{grid-template-columns:1.1fr 2fr;gap:60px;}}
+    .mission::before{
+      content:"";position:absolute;right:-60px;top:-60px;width:280px;height:280px;
+      background:radial-gradient(circle,rgba(255,59,48,.18),transparent 70%);pointer-events:none;
+    }
+    .mission .col-left h2{
+      font-family:"Bebas Neue";font-size:clamp(40px,5vw,68px);line-height:.95;letter-spacing:.02em;
+      text-transform:uppercase;color:#fff;margin:14px 0 0;
+    }
+    .mission .col-left h2 .red{color:var(--red);}
+    .mission .col-right p{color:#d4d4d8;font-size:17px;line-height:1.75;margin:0;}
+    .mission .col-right .quote{
+      font-family:"Bebas Neue";font-size:84px;line-height:.6;color:var(--red);margin:0 0 6px;
+    }
+
+    /* SECTION HEADERS */
+    .sec-head{margin:80px 0 28px;}
+    .sec-head .label{margin-bottom:10px;display:block;}
+    .sec-head h2{
+      font-family:"Bebas Neue";font-size:clamp(36px,5vw,64px);line-height:.95;letter-spacing:.02em;
+      text-transform:uppercase;color:#fff;margin:0;
+    }
+    .sec-head h2 .red{color:var(--red);}
+    .sec-head h2 .dim{color:#52525b;}
+
+    /* FEATURE CARDS */
+    .cards-row{
+      display:grid;grid-template-columns:1fr;gap:0;border:1px solid var(--line);background:#0A0A0A;
+    }
+    @media(min-width:768px){.cards-row{grid-template-columns:repeat(3,1fr);}}
+    .modern-card{
+      position:relative;padding:36px 32px;border-right:1px solid var(--line);transition:background .2s;
+    }
+    .modern-card:last-child{border-right:none;}
+    @media(max-width:767px){
+      .modern-card{border-right:none;border-bottom:1px solid var(--line);}
+      .modern-card:last-child{border-bottom:none;}
+    }
+    .modern-card:hover{background:rgba(255,255,255,.02);}
+    .modern-card .ico{
+      width:46px;height:46px;border:1px solid var(--line);
+      display:flex;align-items:center;justify-content:center;color:#fff;margin-bottom:28px;transition:all .25s;
+    }
+    .modern-card:nth-child(1):hover .ico{border-color:var(--red);color:var(--red);}
+    .modern-card:nth-child(2):hover .ico{border-color:var(--yellow);color:var(--yellow);}
+    .modern-card:nth-child(3):hover .ico{border-color:var(--blue);color:var(--blue);}
+    .modern-card h2{
+      font-family:"Bebas Neue";font-size:30px;letter-spacing:.04em;text-transform:uppercase;color:#fff;margin:0 0 12px;line-height:1;
+    }
+    .modern-card .muted, .modern-card p{color:var(--muted);font-size:14px;line-height:1.7;margin:0;}
+    .modern-card::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--red);transition:width .4s;}
+    .modern-card:hover::after{width:100%;}
+
+    /* HOW IT WORKS — numbered timeline */
+    .protocol{
+      border:1px solid var(--line);background:#0A0A0A;padding:48px 40px;
+    }
+    .steps{display:grid;grid-template-columns:1fr;gap:0;}
+    @media(min-width:900px){.steps{grid-template-columns:repeat(4,1fr);}}
+    .step{
+      position:relative;padding:24px 28px 24px 0;border-right:1px solid var(--line);
+    }
+    @media(max-width:899px){.step{border-right:none;border-bottom:1px solid var(--line);padding:24px 0;}.step:last-child{border-bottom:none;}}
+    @media(min-width:900px){.step:last-child{border-right:none;}.step:not(:first-child){padding-left:28px;}}
+    .step .num{
+      font-family:"Bebas Neue";font-size:60px;line-height:1;color:#27272a;letter-spacing:.02em;
+    }
+    .step .ttl{
+      font-family:"Bebas Neue";font-size:22px;letter-spacing:.04em;text-transform:uppercase;color:#fff;margin:14px 0 8px;
+    }
+    .step p{color:var(--muted);font-size:13px;line-height:1.65;margin:0;}
+    .step:hover .num{color:var(--red);transition:color .2s;}
+
+    /* TECH STACK CHIPS */
+    .stack{
+      border:1px solid var(--line);background:#0A0A0A;padding:48px 40px;
+    }
+    .stack > p{color:var(--muted);font-size:15px;line-height:1.7;max-width:680px;margin:0 0 32px;}
+    .chips{display:flex;flex-wrap:wrap;gap:10px;}
+    .chip{
+      display:inline-flex;align-items:center;gap:10px;padding:12px 18px;
+      border:1px solid var(--line);background:#050505;
+      font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#e4e4e7;
+      transition:all .2s;
+    }
+    .chip:hover{border-color:var(--red);color:#fff;transform:translateY(-2px);}
+    .chip .d{width:6px;height:6px;border-radius:50%;background:var(--red);}
+    .chip:nth-child(2n) .d{background:var(--yellow);}
+    .chip:nth-child(3n) .d{background:var(--blue);}
+    .chip:nth-child(5n) .d{background:var(--green);}
+
+    /* CTA STRIP */
+    .cta-strip{
+      margin-top:48px;background:var(--red);padding:48px 40px;
+      display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;
+      position:relative;overflow:hidden;
+    }
+    .cta-strip::before{
+      content:"";position:absolute;inset:0;opacity:.2;
+      background-image:linear-gradient(rgba(255,255,255,.15) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.15) 1px,transparent 1px);
+      background-size:50px 50px;
+    }
+    .cta-strip h3{
+      position:relative;font-family:"Bebas Neue";font-size:clamp(32px,4vw,48px);line-height:.95;letter-spacing:.02em;
+      text-transform:uppercase;color:#fff;margin:0;
+    }
+    .cta-strip .actions{position:relative;display:flex;flex-wrap:wrap;gap:10px;}
+    .btn{
+      display:inline-flex;align-items:center;gap:10px;padding:16px 22px;
+      font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.25em;text-transform:uppercase;
+      transition:all .2s;border:1px solid transparent;cursor:pointer;text-decoration:none;
+    }
+    .btn-dark{background:#000;color:#fff;}
+    .btn-dark:hover{background:#18181b;transform:translateY(-2px);}
+    .btn-light{background:#fff;color:#000;}
+    .btn-light:hover{background:#e4e4e7;transform:translateY(-2px);}
+
+    /* FOOTER */
+    footer.foot{
+      border-top:1px solid var(--line);padding:24px 28px;margin-top:60px;
+      display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+      font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--dim);
+    }
+    .ok{display:inline-flex;align-items:center;gap:8px;}
+    .ok .d{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.6s ease-in-out infinite;}
+
+    /* Floating Report */
+    .float-report{
+      position:fixed;bottom:24px;right:24px;z-index:60;display:inline-flex;align-items:center;gap:10px;
+      background:var(--red);color:#fff;padding:14px 20px;
+      font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.25em;text-transform:uppercase;
+      box-shadow:0 0 30px rgba(255,59,48,.5);transition:all .2s;text-decoration:none;
+    }
+    .float-report:hover{background:var(--red-2);transform:translateY(-2px);}
+  </style>
 </head>
 
 <body>
 
-    <!-- NAVBAR -->
-    <header class="topbar">
-        <div class="brand">Neighborhood Safety</div>
-        <nav id="topNav" class="nav-links"></nav>
-    </header>
+  <!-- NAVBAR -->
+  <header class="topbar">
+    <a href="/" class="brand">
+      <span class="badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.5 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+      </span>
+      Safe<span class="accent">Net</span>
+    </a>
+    <nav id="topNav" class="nav-links"></nav>
+  </header>
 
-    <!-- MAIN -->
-    <main class="container">
+  <!-- MAIN -->
+  <main class="container">
 
-        <!-- HERO -->
-        <section class="hero">
-            <h1>About Our Platform</h1>
-            <p>
-                Neighborhood Safety & Incident Reporting System is designed to empower
-                communities by providing a fast, transparent, and reliable way to report
-                and manage local incidents.
-            </p>
-        </section>
+    <!-- HERO -->
+    <section class="hero">
+      <span class="label">// Briefing — About SafeNet</span>
+      <h1>Built for the<br>blocks that<br><span class="red">refuse to be passive.</span></h1>
+      <p>SafeNet is a neighborhood safety &amp; incident reporting system designed to empower communities with a fast, transparent, and reliable channel for real-time alerts — bridging residents and local authorities through technology.</p>
+    </section>
 
-        <!-- MISSION -->
-        <section class="modern-card">
-            <h2>🎯 Our Mission</h2>
-            <p class="muted">
-                Our goal is to create safer neighborhoods by enabling residents to
-                report incidents in real-time and helping administrators respond
-                quickly and effectively. We aim to bridge the gap between citizens
-                and local authorities using technology.
-            </p>
-        </section>
+    <!-- MISSION -->
+    <section class="mission">
+      <div class="col-left">
+        <span class="label">// Section 01 — Mission</span>
+        <h2>Our<br>Mission.</h2>
+      </div>
+      <div class="col-right">
+        <div class="quote">"</div>
+        <p>To create safer neighborhoods by enabling residents to report incidents in real-time and helping administrators respond quickly and effectively. We exist to bridge the gap between citizens and local authorities — replacing slow channels and noisy social feeds with verified, actionable safety intelligence.</p>
+      </div>
+    </section>
 
-        <!-- FEATURES -->
-        <section class="cards-row">
+    <!-- FEATURES SECTION HEAD -->
+    <div class="sec-head">
+      <span class="label">// Section 02 — Capabilities</span>
+      <h2>What we <span class="red">deliver.</span></h2>
+    </div>
 
-            <div class="modern-card">
-                <h2>📝 Easy Reporting</h2>
-                <p class="muted">
-                    Residents can quickly report incidents with detailed descriptions,
-                    ensuring accurate information reaches the authorities.
-                </p>
-            </div>
+    <!-- FEATURES -->
+    <section class="cards-row">
+      <div class="modern-card">
+        <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+        <h2>Easy Reporting</h2>
+        <p class="muted">Residents file incidents in seconds with detailed descriptions, photos and location — ensuring accurate intel reaches authorities the moment it matters.</p>
+      </div>
+      <div class="modern-card">
+        <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <h2>Real-Time Tracking</h2>
+        <p class="muted">Track every incident through Pending → Verified → Resolved with full transparency. No silence. No black boxes. No guesswork.</p>
+      </div>
+      <div class="modern-card">
+        <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.5 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></div>
+        <h2>Admin Control</h2>
+        <p class="muted">Admins verify reports, manage users, and ensure only valid, non-malicious incidents are processed and broadcast to the community.</p>
+      </div>
+    </section>
 
-            <div class="modern-card">
-                <h2>📊 Real-Time Tracking</h2>
-                <p class="muted">
-                    Track the status of incidents from Pending → Verified → Resolved
-                    with full transparency.
-                </p>
-            </div>
+    <!-- HOW IT WORKS HEAD -->
+    <div class="sec-head">
+      <span class="label">// Section 03 — Operating Protocol</span>
+      <h2>How it <span class="red">works.</span></h2>
+    </div>
 
-            <div class="modern-card">
-                <h2>🛡️ Admin Control</h2>
-                <p class="muted">
-                    Admins can verify reports, manage users, and ensure only valid
-                    incidents are processed.
-                </p>
-            </div>
+    <!-- HOW IT WORKS -->
+    <section class="protocol">
+      <div class="steps">
+        <div class="step">
+          <span class="num">01</span>
+          <div class="ttl">Register</div>
+          <p>Residents create an account and get approved by an admin to ensure jurisdiction integrity.</p>
+        </div>
+        <div class="step">
+          <span class="num">02</span>
+          <div class="ttl">Submit</div>
+          <p>Submit incident reports with category, description, photos, and exact location — anonymous by default.</p>
+        </div>
+        <div class="step">
+          <span class="num">03</span>
+          <div class="ttl">Verify</div>
+          <p>Admins review and verify incidents, cross-referencing nearby reports to filter noise from signal.</p>
+        </div>
+        <div class="step">
+          <span class="num">04</span>
+          <div class="ttl">Broadcast</div>
+          <p>Status updates push to every member in range — keeping the entire community in sync, in real time.</p>
+        </div>
+      </div>
+    </section>
 
-        </section>
+    <!-- TECH STACK HEAD -->
+    <div class="sec-head">
+      <span class="label">// Section 04 — Stack</span>
+      <h2>Built on a<br><span class="red">modern stack.</span></h2>
+    </div>
 
-        <!-- HOW IT WORKS -->
-        <section class="modern-card" style="text-align:center;">
-            <h2>⚙️ How It Works</h2>
-            <ul class="muted">
-                <li>✔ Residents register and get approved by admin</li>
-                <li>✔ Submit incident reports with details</li>
-                <li>✔ Admin reviews and verifies incidents</li>
-                <li>✔ Status updates are visible to all users</li>
-            </ul>
-        </section>
+    <!-- TECH STACK -->
+    <section class="stack">
+      <p>SafeNet is engineered with battle-tested web technologies for scalability, performance, and reliability. Every layer is chosen to keep the platform fast under load and secure under pressure.</p>
+      <div class="chips">
+        <span class="chip"><span class="d"></span> HTML 5</span>
+        <span class="chip"><span class="d"></span> CSS 3</span>
+        <span class="chip"><span class="d"></span> JavaScript (ES6+)</span>
+        <span class="chip"><span class="d"></span> Node.js</span>
+        <span class="chip"><span class="d"></span> Express</span>
+        <span class="chip"><span class="d"></span> MongoDB</span>
+        <span class="chip"><span class="d"></span> Leaflet · Maps</span>
+        <span class="chip"><span class="d"></span> Chart.js · Analytics</span>
+      </div>
+    </section>
 
-        <!-- TECH STACK -->
-        <section class="modern-card" style="text-align:center;">
-            <h2>💻 Technology Used</h2>
-            <p class="muted">
-                This system is built using modern web technologies including
-                HTML, CSS, JavaScript, Node.js, and MongoDB, ensuring scalability,
-                performance, and reliability.
-            </p>
-        </section>
+    <!-- CTA STRIP -->
+    <section class="cta-strip">
+      <h3>Ready to protect<br>your block?</h3>
+      <div class="actions">
+        <a href="/register.html" class="btn btn-dark">Create Account →</a>
+        <a href="/login.html" class="btn btn-light">Login →</a>
+      </div>
+    </section>
 
-    </main>
+  </main>
 
-    <!-- FOOTER -->
-    <footer>
-        <small>&copy; <span id="year"></span> Neighborhood Safety System</small>
-    </footer>
+  <!-- FOOTER -->
+  <footer class="foot">
+    <small>&copy; <span id="year"></span> SafeNet · Neighborhood Safety</small>
+    <small class="ok"><span class="d"></span> All systems operational</small>
+  </footer>
 
-   <script src="/js/api.js"></script>
-   <script src="/js/common.js"></script>
-    <script>
-        document.getElementById("year").textContent = new Date().getFullYear();
-    </script>
+  <!-- Floating Report -->
+  <a href="#" class="float-report">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 18a5 5 0 0 1-.42-9.97 9 9 0 1 1 17.71 2.66"/><path d="M12 12v9"/><path d="m8 17 4 4 4-4"/></svg>
+    Report Now
+  </a>
+
+  <!-- JS (kept) -->
+  <script src="/js/api.js"></script>
+  <script src="/js/common.js"></script>
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
 
 </body>
-
 </html>

@@ -1,54 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Report Incident | Neighborhood Safety</title>
+    <title>Report Incident | SAFE NET</title>
 
-    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-    <!-- Icons -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root{
+            --bg-0:#0b0b0d;--bg-1:#111115;--bg-2:#16161c;--bg-3:#1c1c24;
+            --line:rgba(255,255,255,.07);--line-strong:rgba(255,255,255,.14);
+            --text:#f2f2f4;--text-dim:#b7b7be;--text-mute:#7a7a83;
+            --red:#ff4a4a;--red-soft:#ff6b6b;--teal:#00c48c;--amber:#f7b733;
+            --radius-md:14px;--radius-lg:22px;--radius-pill:999px;
+            --shadow-1:0 1px 0 rgba(255,255,255,.03) inset,0 10px 30px rgba(0,0,0,.45);
+            --shadow-red:0 0 0 1px rgba(255,74,74,.35),0 12px 40px rgba(255,74,74,.22);
+        }
+        *,*::before,*::after{box-sizing:border-box}
+        html,body{margin:0;padding:0;background:var(--bg-0);color:var(--text);font-family:"Archivo",Arial,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh}
+        body{background:radial-gradient(1100px 600px at 85% -10%,rgba(255,74,74,.12),transparent 60%),radial-gradient(900px 500px at -10% 20%,rgba(0,196,140,.05),transparent 60%),var(--bg-0)}
+        a{color:inherit;text-decoration:none}
+        ::selection{background:var(--red);color:#fff}
+
+        /* TOPBAR */
+        .topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px 40px;background:rgba(11,11,13,.75);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+        .brand{display:inline-flex;align-items:center;gap:12px;font-family:"Anton",sans-serif;font-size:22px;letter-spacing:.08em;text-transform:uppercase;position:relative}
+        .brand::before{content:"";width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#1a1a22,#0e0e13);border:1px solid var(--line-strong);display:inline-block}
+        .brand::after{content:"";position:absolute;left:12px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:var(--red);box-shadow:0 0 0 3px rgba(255,74,74,.18),0 0 14px rgba(255,74,74,.55);animation:pulse 1.8s ease-in-out infinite}
+        @keyframes pulse{0%,100%{transform:translateY(-50%) scale(1);opacity:1}50%{transform:translateY(-50%) scale(1.15);opacity:.75}}
+        .nav-links{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+        .nav-links a,.nav-links button,.nav-links span{display:inline-flex;align-items:center;padding:9px 16px;border-radius:var(--radius-pill);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);background:transparent;border:1px solid transparent;cursor:pointer;transition:color .2s,background-color .2s,transform .2s}
+        .nav-links a:hover,.nav-links button:hover{color:var(--text);background:rgba(255,255,255,.04)}
+        .nav-links a.active,.nav-links .active{background:var(--teal);color:#07110c}
+        .nav-links .logout,.nav-links a[href*="logout"]{background:var(--red);color:#fff}
+        .nav-links .logout:hover,.nav-links a[href*="logout"]:hover{background:var(--red-soft);transform:translateY(-1px)}
+
+        /* LAYOUT */
+        .auth-container{max-width:1320px;margin:0 auto;padding:56px 40px 80px;display:grid;grid-template-columns:1fr 1.1fr;gap:56px;align-items:flex-start}
+
+        /* HERO LEFT */
+        .hero-side{position:sticky;top:110px}
+        .hero-meta{display:inline-flex;align-items:center;gap:10px;padding:7px 14px;margin-bottom:24px;border:1px solid rgba(255,74,74,.45);border-radius:var(--radius-pill);color:var(--red);background:rgba(255,74,74,.05);font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+        .hero-meta::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 3px rgba(255,74,74,.18);animation:pulse 1.6s ease-in-out infinite}
+        .hero-title{font-family:"Anton",sans-serif;font-weight:400;font-size:clamp(56px,7vw,110px);line-height:.88;letter-spacing:-.01em;text-transform:uppercase;margin:0 0 24px}
+        .hero-title .accent{color:var(--red)}
+        .hero-sub{max-width:460px;color:var(--text-dim);font-size:16px;line-height:1.6;margin:0 0 32px}
+        .hero-steps{display:flex;flex-direction:column;gap:14px;padding:20px;border-radius:var(--radius-md);background:linear-gradient(180deg,var(--bg-2),var(--bg-1));border:1px solid var(--line)}
+        .hero-step{display:flex;align-items:flex-start;gap:14px}
+        .hero-step-num{flex-shrink:0;width:34px;height:34px;border-radius:10px;background:var(--bg-3);border:1px solid var(--line-strong);display:inline-flex;align-items:center;justify-content:center;font-family:"Anton",sans-serif;font-size:16px;color:var(--red)}
+        .hero-step-body h4{margin:0 0 2px;font-family:"Anton",sans-serif;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--text)}
+        .hero-step-body p{margin:0;font-size:13px;color:var(--text-mute)}
+
+        /* CARD RIGHT */
+        .auth-card{position:relative;background:linear-gradient(180deg,var(--bg-2),var(--bg-1));border:1px solid var(--line);border-radius:var(--radius-lg);padding:40px 40px 36px;box-shadow:var(--shadow-1);overflow:hidden}
+        .auth-card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,var(--red),transparent 70%)}
+        .panel-kicker{display:inline-flex;align-items:center;gap:8px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-mute);margin-bottom:8px}
+        .panel-kicker i{color:var(--red)}
+        .auth-card h1{font-family:"Anton",sans-serif;font-weight:400;font-size:44px;line-height:1;letter-spacing:.02em;text-transform:uppercase;margin:0 0 12px}
+        .auth-card h1 i{color:var(--red);margin-right:10px}
+        .muted{color:var(--text-dim);font-size:14px;margin:0 0 32px}
+
+        /* FORM */
+        .auth-form{display:flex;flex-direction:column;gap:22px}
+        .form-field{display:flex;flex-direction:column;gap:8px}
+        .form-field label{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-mute);font-weight:600}
+        .form-field input,.form-field select,.form-field textarea{width:100%;padding:14px 16px;background:var(--bg-3);color:var(--text);border:1px solid var(--line);border-radius:var(--radius-md);font-family:"Archivo",sans-serif;font-size:14.5px;transition:border-color .2s,background-color .2s,box-shadow .2s;outline:none}
+        .form-field input::placeholder,.form-field textarea::placeholder{color:var(--text-mute)}
+        .form-field input:hover,.form-field select:hover,.form-field textarea:hover{border-color:var(--line-strong)}
+        .form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--red);background:#1e1e26;box-shadow:0 0 0 4px rgba(255,74,74,.10)}
+        .form-field textarea{min-height:130px;resize:vertical}
+        .form-field select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23b7b7be' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 18px center;padding-right:44px;cursor:pointer}
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+        #imagePreview{margin-top:4px}
+        #imagePreview img{max-width:100%;max-height:260px;border-radius:var(--radius-md);border:1px solid var(--line-strong);display:block}
+
+        /* BUTTON */
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:"Archivo",sans-serif;font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:16px 28px;border-radius:var(--radius-pill);border:1px solid transparent;background:var(--bg-3);color:var(--text);cursor:pointer;transition:transform .2s,background-color .2s,box-shadow .2s}
+        .btn.full{width:100%}
+        .btn.gradient{background:var(--red);color:#fff;box-shadow:var(--shadow-red);margin-top:8px}
+        .btn.gradient::before{content:"\f071";font-family:"Font Awesome 6 Free";font-weight:900;font-size:12px}
+        .btn.gradient:hover{background:var(--red-soft);transform:translateY(-2px);box-shadow:0 0 0 1px rgba(255,74,74,.5),0 18px 48px rgba(255,74,74,.32)}
+        .btn.gradient:active{transform:translateY(0)}
+
+        /* NOTE */
+        .note{margin-top:22px;padding:14px 16px;border-left:3px solid var(--teal);background:rgba(0,196,140,.05);border-radius:6px;font-size:12.5px;color:var(--text-dim);display:flex;align-items:flex-start;gap:10px}
+        .note i{color:var(--teal);margin-top:2px}
+
+        /* FOOTER */
+        footer{max-width:1320px;margin:0 auto;padding:24px 40px 40px;border-top:1px solid var(--line);color:var(--text-mute);font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase}
+
+        /* RESPONSIVE */
+        @media (max-width:980px){.auth-container{grid-template-columns:1fr;gap:40px;padding:36px 24px 60px}.hero-side{position:static}.hero-title{font-size:56px}}
+        @media (max-width:600px){.topbar{padding:14px 20px}.auth-card{padding:28px 22px}.auth-card h1{font-size:32px}.form-grid{grid-template-columns:1fr}footer{padding:20px}}
+    </style>
 </head>
-
 <body>
 
-    <!-- NAVBAR -->
     <header class="topbar">
-        <div class="brand">Neighborhood Safety</div>
+        <div class="brand">SAFE NET</div>
         <nav id="topNav" class="nav-links"></nav>
     </header>
 
-    <!-- MAIN -->
     <main class="auth-container">
+
+        <aside class="hero-side">
+            <span class="hero-meta"><span>LIVE &middot; INCIDENT REPORTING</span></span>
+            <h1 class="hero-title">SEE IT.<br><span class="accent">REPORT IT.</span></h1>
+            <p class="hero-sub">
+                Every report strengthens the net. Your submission is broadcast to verified
+                neighbors and on-duty responders in real time &mdash; so the block reacts before
+                the threat escalates.
+            </p>
+            <div class="hero-steps">
+                <div class="hero-step"><span class="hero-step-num">01</span><div class="hero-step-body"><h4>Describe the incident</h4><p>A clear title and two lines of context are enough.</p></div></div>
+                <div class="hero-step"><span class="hero-step-num">02</span><div class="hero-step-body"><h4>Pin the location</h4><p>Street name, cross street, or nearest landmark.</p></div></div>
+                <div class="hero-step"><span class="hero-step-num">03</span><div class="hero-step-body"><h4>Broadcast in seconds</h4><p>Moderators verify &amp; push the alert to your area.</p></div></div>
+            </div>
+        </aside>
 
         <section class="auth-card">
 
-            <h1>🚨 Report an Incident</h1>
-            <p class="muted">
-                Provide accurate details so authorities can respond quickly.
-            </p>
+            <span class="panel-kicker"><i class="fa-solid fa-triangle-exclamation"></i> NEW FIELD REPORT</span>
+            <h1><i class="fa-solid fa-bullhorn"></i>Report an Incident</h1>
+            <p class="muted">Provide accurate details so authorities and neighbors can respond quickly.</p>
 
             <form id="reportForm" class="auth-form">
 
-                <!-- TITLE -->
                 <div class="form-field">
                     <label>Title</label>
                     <input type="text" name="title" placeholder="Short title of incident" required />
                 </div>
 
-                <!-- DESCRIPTION -->
                 <div class="form-field">
                     <label>Description</label>
-                    <textarea name="description" placeholder="Explain what happened..." required></textarea>
+                    <textarea name="description" placeholder="Explain what happened, who was involved, and anything responders should know..." required></textarea>
                 </div>
 
-                <!-- GRID -->
                 <div class="form-grid">
-
-                    <!-- TYPE -->
                     <div class="form-field">
                         <label>Type</label>
                         <select name="type" required>
@@ -59,28 +151,25 @@
                             <option value="Suspicious Activity">Suspicious Activity</option>
                         </select>
                     </div>
-
-                    <!-- LOCATION -->
                     <div class="form-field">
                         <label>Location</label>
                         <input type="text" name="location" placeholder="Street / area" required />
                     </div>
-
                 </div>
 
-                <!-- IMAGE -->
                 <div class="form-field">
                     <label>Image URL (optional)</label>
                     <input type="url" name="image" placeholder="https://example.com/image.jpg" />
                 </div>
 
-                <!-- IMAGE PREVIEW -->
-                <div id="imagePreview" style="margin-top:10px;"></div>
+                <div id="imagePreview"></div>
 
-                <!-- BUTTON -->
-                <button class="btn gradient full" type="submit">
-                    Submit Report
-                </button>
+                <button class="btn gradient full" type="submit">Submit Report</button>
+
+                <div class="note">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Your name stays hidden from the public feed. Only verified moderators can see reporter identity.</span>
+                </div>
 
             </form>
 
@@ -88,20 +177,33 @@
 
     </main>
 
-    <!-- FOOTER -->
     <footer>
-        <small>&copy; <span id="year"></span> Neighborhood Safety System</small>
+        <small>SAFE NET &copy; <span id="year"></span> &middot; Neighborhood Safety Operations &middot; v1.0</small>
     </footer>
 
-    <!-- JS -->
     <script src="/js/api.js"></script>
     <script src="/js/common.js"></script>
     <script src="/js/report.js"></script>
 
     <script>
         document.getElementById("year").textContent = new Date().getFullYear();
+
+        // Live image preview
+        (function () {
+            const imgInput = document.querySelector('input[name="image"]');
+            const preview  = document.getElementById("imagePreview");
+            if (!imgInput || !preview) return;
+            imgInput.addEventListener("input", () => {
+                const url = imgInput.value.trim();
+                preview.innerHTML = "";
+                if (!url) return;
+                const img = new Image();
+                img.onload  = () => { preview.innerHTML = ""; preview.appendChild(img); };
+                img.onerror = () => { preview.innerHTML = ""; };
+                img.src = url; img.alt = "Incident preview";
+            });
+        })();
     </script>
 
 </body>
-
 </html>
